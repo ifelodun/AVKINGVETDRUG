@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Manage updates{% endblock %}
+
+{% block content %}
+<section class="form-section wrap">
+    <div class="dash-header">
+        <h1>Post an update</h1>
+        <a class="btn btn-secondary btn-small" href="{{ url_for('admin_dashboard') }}">&larr; Dashboard</a>
+    </div>
+
+    <form class="form-card" method="POST" enctype="multipart/form-data">
+        <div class="field">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div class="field">
+            <label for="body">Details</label>
+            <textarea id="body" name="body" required></textarea>
+        </div>
+        <div class="field">
+            <label for="images">Photos <span class="hint">(optional, up to 4)</span></label>
+            <input type="file" id="images" name="images" accept="image/*" multiple>
+        </div>
+        <button class="btn btn-primary" type="submit">Post update</button>
+    </form>
+</section>
+
+<section class="updates-section wrap">
+    <h2>Posted updates</h2>
+
+    {% if not updates %}
+    <div class="empty-state">Nothing posted yet.</div>
+    {% endif %}
+
+    {% for update in updates %}
+    <article class="update-post">
+        <div class="update-date">{{ update.created_at.strftime('%d %b %Y') }}</div>
+        <h3>{{ update.title }}</h3>
+        <p class="update-body">{{ update.body }}</p>
+        {% if update.image_urls %}
+        <div class="update-images">
+            {% for img in update.image_urls %}
+            <img src="{{ img }}" alt="">
+            {% endfor %}
+        </div>
+        {% endif %}
+    </article>
+    {% endfor %}
+</section>
+{% endblock %}
