@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Customer Care{% endblock %}</title>
+    <title>{% block title %}{{ company.company_name }}{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -11,7 +11,10 @@
 <body>
     <header class="site-header">
         <div class="wrap header-row">
-            <a class="brand" href="{{ url_for('home') }}">Customer Care</a>
+            <a class="brand" href="{{ url_for('home') }}">
+                {% if company.logo_url %}<img src="{{ company.logo_url }}" alt="{{ company.company_name }}" class="brand-logo">{% endif %}
+                {{ company.company_name }}
+            </a>
             <nav class="main-nav">
                 <a href="{{ url_for('submit_complaint') }}">Report an issue</a>
                 <a href="{{ url_for('track_complaint') }}">Track a complaint</a>
@@ -36,7 +39,7 @@
 
     <footer class="site-footer">
         <div class="wrap">
-            <p>Customer Care &middot; we read every message</p>
+            <p>{{ company.company_name }}{% if company.location %} &middot; {{ company.location }}{% endif %}{% if company.phone %} &middot; {{ company.phone }}{% endif %}</p>
         </div>
     </footer>
 </body>
