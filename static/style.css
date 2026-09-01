@@ -503,3 +503,31 @@ input[type=file] {
     align-items: baseline;
     margin-bottom: 12px;
 }
+.brand {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-logo {
+    height: 28px;
+    width: 28px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.current-logo {
+    height: 72px;
+    width: 72px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 8px;
+    background: #fff;
+    margin-bottom: 20px;
+}
