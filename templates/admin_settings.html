@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Company settings{% endblock %}
+
+{% block content %}
+<section class="form-section wrap">
+    <div class="dash-header">
+        <h1>Company settings</h1>
+        <a class="btn btn-secondary btn-small" href="{{ url_for('admin_dashboard') }}">&larr; Dashboard</a>
+    </div>
+
+    {% if settings.logo_url %}
+    <img src="{{ settings.logo_url }}" alt="Current logo" class="current-logo">
+    {% endif %}
+
+    <form class="form-card" method="POST" enctype="multipart/form-data">
+        <div class="field">
+            <label for="company_name">Company name</label>
+            <input type="text" id="company_name" name="company_name" value="{{ settings.company_name or '' }}" required>
+        </div>
+
+        <div class="field">
+            <label for="location">Location <span class="hint">(optional)</span></label>
+            <input type="text" id="location" name="location" value="{{ settings.location or '' }}">
+        </div>
+
+        <div class="field-row">
+            <div class="field">
+                <label for="phone">Phone <span class="hint">(optional)</span></label>
+                <input type="tel" id="phone" name="phone" value="{{ settings.phone or '' }}">
+            </div>
+            <div class="field">
+                <label for="email">Contact email <span class="hint">(optional)</span></label>
+                <input type="email" id="email" name="email" value="{{ settings.email or '' }}">
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="logo">Logo <span class="hint">(optional &mdash; replaces the current one)</span></label>
+            <input type="file" id="logo" name="logo" accept="image/*">
+        </div>
+
+        <button class="btn btn-primary" type="submit">Save settings</button>
+    </form>
+</section>
+{% endblock %}
