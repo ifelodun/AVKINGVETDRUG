@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Complaint sent{% endblock %}
+
+{% block content %}
+<section class="confirm-section wrap">
+    <h1>Got it. We're on it.</h1>
+    <p class="hero-sub">Save this tracking code — you'll need it to check for replies.</p>
+
+    <div class="tracking-code">{{ tracking_code }}</div>
+
+    <div class="hero-actions">
+        <a class="btn btn-primary" href="{{ url_for('view_complaint', tracking_code=tracking_code) }}">View your complaint</a>
+        <a class="btn btn-secondary" href="{{ url_for('home') }}">Back home</a>
+    </div>
+</section>
+{% endblock %}
