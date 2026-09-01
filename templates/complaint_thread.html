@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ complaint.subject }}{% endblock %}
+
+{% block content %}
+<section class="thread-section wrap">
+
+    <div class="thread-header">
+        {% if is_admin_view %}
+        <a href="{{ url_for('admin_dashboard') }}">&larr; Back to dashboard</a>
+        {% endif %}
+
+        <div class="thread-code">{{ complaint.tracking_code }}</div>
+        <h1>{{ complaint.subject }}</h1>
+        <p class="complaint-meta">
+            {{ complaint.name }} &middot; {{ complaint.email }}
+            {% if complaint.phone %} &middot; {{ complaint.phone }}{% endif %}
+        </p>
+        <span class="status-badge status-{{ complaint.status }}">{{ complaint.status.replace('_', ' ') }}</span>
+
+        {% if is_admin_view %}
+        <form class="status-controls" method="POST">
+            <input type="hidden" name="action" value="set_status">
+            <select name="status" onchange="this.form.submit()">
+                <option value="open" {% if complaint.status == 'open' %}selected{% endif %}>Open</option>
+                <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>In progress</option>
+                <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Resolved</option>
+            </select>
+        </form>
+        {% endif %}
+    </div>
+
+    {% for msg in messages %}
+    <div class="message {% if msg.sender_type == 'admin' %}message-from-admin{% endif %}">
+        <div class="message-head">
+            <span class="message-sender {% if msg.sender_type == 'admin' %}sender-admin{% else %}sender-customer{% endif %}">
+                {% if msg.sender_type == 'admin' %}Support team{% else %}{{ complaint.name }}{% endif %}
+            </span>
+            <span class="message-time">{{ msg.created_at.strftime('%d %b %Y, %H:%M') }}</span>
+        </div>
+        <p class="message-body">{{ msg.message }}</p>
+        {% if msg.image_urls %}
+        <div class="message-images">
+            {% for img in msg.image_urls %}
+            <img src="{{ img }}" alt="">
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <form class="reply-form" method="POST" enctype="multipart/form-data">
+        {% if is_admin_view %}<input type="hidden" name="action" value="reply">{% endif %}
+        <div class="field">
+            <label for="message">{% if is_admin_view %}Reply to customer{% else %}Add a message{% endif %}</label>
+            <textarea id="message" name="message" required></textarea>
+        </div>
+        <div class="field">
+            <label for="images">Photos <span class="hint">(optional, up to 4)</span></label>
+            <input type="file" id="images" name="images" accept="image/*" multiple>
+        </div>
+        <button class="btn btn-primary" type="submit">Send</button>
+    </form>
+
+</section>
+{% endblock %}
