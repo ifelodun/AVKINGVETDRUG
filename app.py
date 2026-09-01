@@ -184,6 +184,42 @@ def get_complaint_thread(tracking_code):
         conn.close()
 
 
+def get_company_settings():
+    """
+    Fetch the single company_settings row, creating a default one if it
+    doesn't exist yet. Returns a dict with a ready-to-use logo_url.
+    """
+
+    conn = get_db()
+
+    try:
+        with conn.cursor() as cur:
+
+            cur.execute("SELECT * FROM company_settings ORDER BY id ASC LIMIT 1")
+            settings = cur.fetchone()
+
+            if not settings:
+                cur.execute(
+                    "INSERT INTO company_settings (company_name) VALUES ('Customer Care') RETURNING *"
+                )
+                settings = cur.fetchone()
+                conn.commit()
+
+            settings = dict(settings)
+            settings["logo_url"] = (
+                public_url(settings["logo_key"]) if settings.get("logo_key") else None
+            )
+
+            return settings
+
+    finally:
+        conn.close()
+
+
+@app.context_processor
+def inject_company_settings():
+    """Makes `company` available in every template without passing it manually."""
+    return {"company": get_company_settings()}
 # ============================================================
 # PUBLIC: HOME
 # ============================================================
