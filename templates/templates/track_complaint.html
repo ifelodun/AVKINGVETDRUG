@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Track a complaint{% endblock %}
+
+{% block content %}
+<section class="form-section wrap">
+    <h1>Track a complaint</h1>
+    <p class="hero-sub">Enter your tracking code and the email you used when reporting the issue.</p>
+
+    <form class="form-card" method="POST">
+        <div class="field">
+            <label for="tracking_code">Tracking code</label>
+            <input type="text" id="tracking_code" name="tracking_code" placeholder="CMP-XXXXXX" required>
+        </div>
+
+        <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <button class="btn btn-primary" type="submit">View complaint</button>
+    </form>
+</section>
+{% endblock %}
