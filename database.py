@@ -82,7 +82,18 @@ def init_db():
                     created_at TIMESTAMP NOT NULL DEFAULT NOW()
                 )
             """)
-
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS company_settings (
+                    id SERIAL PRIMARY KEY,
+                    company_name TEXT NOT NULL DEFAULT 'Customer Care',
+                    location TEXT,
+                    phone TEXT,
+                    email TEXT,
+                    logo_key TEXT,
+                    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+                )
+            """)
+            
             cur.execute("CREATE INDEX IF NOT EXISTS idx_complaints_tracking ON complaints(tracking_code)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_messages_complaint ON complaint_messages(complaint_id)")
 
