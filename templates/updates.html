@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Updates{% endblock %}
+
+{% block content %}
+<section class="updates-section wrap">
+    <h1>Updates</h1>
+    <p class="hero-sub">News, fixes, and announcements from the team.</p>
+
+    {% if not updates %}
+    <div class="empty-state">Nothing posted yet. Check back soon.</div>
+    {% endif %}
+
+    {% for update in updates %}
+    <article class="update-post">
+        <div class="update-date">{{ update.created_at.strftime('%d %b %Y') }}</div>
+        <h3>{{ update.title }}</h3>
+        <p class="update-body">{{ update.body }}</p>
+        {% if update.image_urls %}
+        <div class="update-images">
+            {% for img in update.image_urls %}
+            <img src="{{ img }}" alt="">
+            {% endfor %}
+        </div>
+        {% endif %}
+    </article>
+    {% endfor %}
+</section>
+{% endblock %}
