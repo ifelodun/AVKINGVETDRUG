@@ -679,6 +679,62 @@ def admin_updates():
 
     return render_template("admin_updates.html", updates=updates)
 
+@app.route("/admin/settings", methods=["GET", "POST"])
+@admin_required
+def admin_settings():
+
+    if request.method == "POST":
+
+        company_name = request.form.get("company_name", "").strip()
+        location = request.form.get("location", "").strip()
+        phone = request.form.get("phone", "").strip()
+        email = request.form.get("email", "").strip()
+
+        if not company_name:
+            flash("Company name is required.", "error")
+            return redirect(url_for("admin_settings"))
+
+        settings = get_company_settings()
+
+        logo_key = settings.get("logo_key")
+        logo_file = request.files.get("logo")
+
+        if logo_file and logo_file.filename:
+            uploaded_key = upload_image(logo_file, "company_logo")
+
+            if uploaded_key:
+                logo_key = uploaded_key
+            else:
+                flash("Logo must be a PNG, JPG, GIF, or WEBP image.", "error")
+                return redirect(url_for("admin_settings"))
+
+        conn = get_db()
+
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE company_settings
+                    SET company_name = %s,
+                        location = %s,
+                        phone = %s,
+                        email = %s,
+                        logo_key = %s,
+                        updated_at = NOW()
+                    WHERE id = %s
+                    """,
+                    (company_name, location, phone, email, logo_key, settings["id"]),
+                )
+            conn.commit()
+
+        finally:
+            conn.close()
+
+        flash("Settings saved.", "success")
+        return redirect(url_for("admin_settings"))
+
+    settings = get_company_settings()
+    return render_template("admin_settings.html", settings=settings)
 
 if __name__ == "__main__":
     app.run(debug=True)
