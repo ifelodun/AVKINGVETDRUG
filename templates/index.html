@@ -1,8 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Customer Care{% endblock %}
+{% block title %}{{ company.company_name }}{% endblock %}
 
 {% block content %}
 <section class="hero wrap">
+    <div class="hero-company">
+        {% if company.logo_url %}<img src="{{ company.logo_url }}" alt="{{ company.company_name }}" class="hero-logo">{% endif %}
+        <div>
+            <div class="hero-company-name">{{ company.company_name }}</div>
+            {% if company.location or company.phone %}
+            <div class="hero-company-meta">
+                {% if company.location %}{{ company.location }}{% endif %}
+                {% if company.location and company.phone %}<span class="dot">&middot;</span>{% endif %}
+                {% if company.phone %}{{ company.phone }}{% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
     <h1>Tell us what went wrong. We'll make it right.</h1>
     <p class="hero-sub">Send a complaint with photos if it helps explain the issue. We'll reply here, and you can check back anytime with your tracking code.</p>
     <div class="hero-actions">
