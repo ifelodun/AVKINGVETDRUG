@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Customer Care{% endblock %}
+
+{% block content %}
+<section class="hero wrap">
+    <h1>Tell us what went wrong. We'll make it right.</h1>
+    <p class="hero-sub">Send a complaint with photos if it helps explain the issue. We'll reply here, and you can check back anytime with your tracking code.</p>
+    <div class="hero-actions">
+        <a class="btn btn-primary" href="{{ url_for('submit_complaint') }}">Report an issue</a>
+        <a class="btn btn-secondary" href="{{ url_for('track_complaint') }}">Track a complaint</a>
+    </div>
+</section>
+
+{% if updates %}
+<section class="home-updates wrap">
+    <div class="home-updates-head">
+        <h2>Latest updates</h2>
+        <a href="{{ url_for('updates_feed') }}">View all</a>
+    </div>
+
+    {% for update in updates %}
+    <article class="update-post">
+        <div class="update-date">{{ update.created_at.strftime('%d %b %Y') }}</div>
+        <h3>{{ update.title }}</h3>
+        <p class="update-body">{{ update.body }}</p>
+        {% if update.image_urls %}
+        <div class="update-images">
+            {% for img in update.image_urls %}
+            <img src="{{ img }}" alt="">
+            {% endfor %}
+        </div>
+        {% endif %}
+    </article>
+    {% endfor %}
+</section>
+{% endif %}
+{% endblock %}
