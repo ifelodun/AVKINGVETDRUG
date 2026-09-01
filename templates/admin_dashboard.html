@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Admin dashboard{% endblock %}
+
+{% block content %}
+<section class="dash-section wrap">
+    <div class="dash-header">
+        <h1>Complaints</h1>
+        <div class="hero-actions">
+            <a class="btn btn-secondary btn-small" href="{{ url_for('admin_settings') }}">Company settings</a>
+            <a class="btn btn-secondary btn-small" href="{{ url_for('admin_updates') }}">Manage updates</a>
+            <a class="btn btn-secondary btn-small" href="{{ url_for('admin_logout') }}">Log out</a>
+        </div>
+    </div>
+
+    <div class="filter-row">
+        <a class="filter-pill {% if status_filter == 'all' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='all') }}">All</a>
+        <a class="filter-pill {% if status_filter == 'open' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='open') }}">Open ({{ counts.get('open', 0) }})</a>
+        <a class="filter-pill {% if status_filter == 'in_progress' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='in_progress') }}">In progress ({{ counts.get('in_progress', 0) }})</a>
+        <a class="filter-pill {% if status_filter == 'resolved' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='resolved') }}">Resolved ({{ counts.get('resolved', 0) }})</a>
+    </div>
+
+    {% if not complaints %}
+    <div class="empty-state">No complaints here.</div>
+    {% endif %}
+
+    {% for c in complaints %}
+    <a class="complaint-row" href="{{ url_for('admin_complaint_detail', tracking_code=c.tracking_code) }}">
+        <div class="complaint-main">
+            <div class="complaint-code">{{ c.tracking_code }}</div>
+            <div class="complaint-subject">{{ c.subject }}</div>
+            <div class="complaint-meta">{{ c.name }} &middot; {{ c.updated_at.strftime('%d %b %Y, %H:%M') }}</div>
+        </div>
+        <span class="status-badge status-{{ c.status }}">{{ c.status.replace('_', ' ') }}</span>
+    </a>
+    {% endfor %}
+</section>
+{% endblock %}
