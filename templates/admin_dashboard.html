@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% block title %}Admin dashboard{% endblock %}
 
 {% block content %}
@@ -6,9 +6,7 @@
     <div class="dash-header">
         <h1>Complaints</h1>
         <div class="hero-actions">
-            <a class="btn btn-secondary btn-small" href="{{ url_for('admin_settings') }}">Company settings</a>
-            <a class="btn btn-secondary btn-small" href="{{ url_for('admin_updates') }}">Manage updates</a>
-            <a class="btn btn-secondary btn-small" href="{{ url_for('admin_logout') }}">Log out</a>
+            
         </div>
     </div>
 
