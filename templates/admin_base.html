@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+            Admin | {{ company.company_name }}
+        {% endblock %}
+    </title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body class="admin-body">
+
+
+<div class="admin-layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="admin-sidebar">
+
+
+        <div class="admin-brand">
+
+            {% if company.logo_url %}
+
+                <img src="{{ company.logo_url }}"
+                     alt="{{ company.company_name }}">
+
+            {% else %}
+
+                <div class="brand-placeholder">
+                    AV
+                </div>
+
+            {% endif %}
+
+            <div>
+
+                <strong>
+                    {{ company.company_name }}
+                </strong>
+
+                <span>
+                    Administration
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="admin-nav">
+
+            <div class="admin-nav-title">
+                MANAGEMENT
+            </div>
+
+
+            <a href="{{ url_for('admin_dashboard') }}"
+               class="admin-nav-item">
+
+                <span>▣</span>
+
+                Dashboard
+
+            </a>
+
+
+            <a href="{{ url_for('admin_dashboard') }}"
+               class="admin-nav-item">
+
+                <span>◉</span>
+
+                Complaints
+
+            </a>
+
+
+            <a href="{{ url_for('admin_updates') }}"
+               class="admin-nav-item">
+
+                <span>◆</span>
+
+                Updates
+
+            </a>
+
+
+            <div class="admin-nav-title">
+                SYSTEM
+            </div>
+
+
+            <a href="{{ url_for('admin_settings') }}"
+               class="admin-nav-item">
+
+                <span>⚙</span>
+
+                Company Settings
+
+            </a>
+
+        </nav>
+
+
+        <!-- SIDEBAR FOOTER -->
+
+        <div class="admin-sidebar-footer">
+
+            <a href="{{ url_for('admin_logout') }}"
+               class="admin-logout">
+
+                <span>↪</span>
+
+                Sign Out
+
+            </a>
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN AREA
+         ===================================================== -->
+
+    <div class="admin-main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="admin-topbar">
+
+            <div>
+
+                <strong>
+                    Administration
+                </strong>
+
+                <span>
+                    Customer Support Management
+                </span>
+
+            </div>
+
+
+            <div class="admin-user">
+
+                <div class="admin-avatar">
+                    A
+                </div>
+
+                <div>
+
+                    <strong>
+                        Administrator
+                    </strong>
+
+                    <span>
+                        System Admin
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- FLASH -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="admin-flashes">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash flash-{{ category }}">
+
+                            {{ message }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- PAGE CONTENT -->
+
+        <main class="admin-content">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </main>
+
+
+        <footer class="admin-footer">
+
+            {{ company.company_name }}
+
+            &middot;
+
+            Administration Portal
+
+        </footer>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>
+
