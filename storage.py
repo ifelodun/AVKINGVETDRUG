@@ -1,86 +1,209 @@
-import io
 import os
 import uuid
 
-import boto3
-from botocore.client import Config
+import cloudinary
+import cloudinary.uploader
 
 
 # ============================================================
-# CLOUDFLARE R2 CONFIGURATION
+# CLOUDINARY CONFIGURATION
 # ============================================================
-#
-# Required environment variables:
-#   R2_ACCOUNT_ID         - Cloudflare account ID
-#   R2_ACCESS_KEY_ID      - R2 API token access key
-#   R2_SECRET_ACCESS_KEY  - R2 API token secret key
-#   R2_BUCKET_NAME         - Name of the R2 bucket
-#   R2_PUBLIC_URL           - Public dev/custom domain URL for the bucket,
-#                             e.g. https://pub-xxxx.r2.dev. All images in
-#                             this app (complaint photos, admin replies,
-#                             updates) are shown to whoever holds the
-#                             tracking link or visits the public updates
-#                             page, so the bucket should have public
-#                             access enabled.
 
-_R2_ACCOUNT_ID = os.getenv("R2_ACCOUNT_ID")
-_R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME")
-_R2_PUBLIC_URL = os.getenv("R2_PUBLIC_URL", "").rstrip("/")
+CLOUDINARY_CLOUD_NAME = os.getenv(
+    "CLOUDINARY_CLOUD_NAME",
+    ""
+).strip()
+
+CLOUDINARY_API_KEY = os.getenv(
+    "CLOUDINARY_API_KEY",
+    ""
+).strip()
+
+CLOUDINARY_API_SECRET = os.getenv(
+    "CLOUDINARY_API_SECRET",
+    ""
+).strip()
 
 
-def _client():
-    return boto3.client(
-        "s3",
-        endpoint_url=f"https://{_R2_ACCOUNT_ID}.r2.cloudflarestorage.com",
-        aws_access_key_id=os.getenv("R2_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("R2_SECRET_ACCESS_KEY"),
-        config=Config(signature_version="s3v4"),
-        region_name="auto",
+# ============================================================
+# CONFIGURE CLOUDINARY
+# ============================================================
+
+cloudinary.config(
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET,
+    secure=True,
+)
+
+
+# ============================================================
+# CLOUDINARY STATUS
+# ============================================================
+
+def cloudinary_is_configured():
+    """
+    Check whether Cloudinary has been configured.
+    """
+
+    return all([
+        CLOUDINARY_CLOUD_NAME,
+        CLOUDINARY_API_KEY,
+        CLOUDINARY_API_SECRET,
+    ])
+
+
+def _configuration_error():
+    """
+    Return a useful configuration error.
+    """
+
+    missing = []
+
+    if not CLOUDINARY_CLOUD_NAME:
+        missing.append(
+            "CLOUDINARY_CLOUD_NAME"
+        )
+
+    if not CLOUDINARY_API_KEY:
+        missing.append(
+            "CLOUDINARY_API_KEY"
+        )
+
+    if not CLOUDINARY_API_SECRET:
+        missing.append(
+            "CLOUDINARY_API_SECRET"
+        )
+
+    return (
+        "Cloudinary is not configured correctly. "
+        "Missing environment variables: "
+        + ", ".join(missing)
     )
 
 
-ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
+# ============================================================
+# IMAGE VALIDATION
+# ============================================================
+
+ALLOWED_IMAGE_EXTENSIONS = {
+    "png",
+    "jpg",
+    "jpeg",
+    "gif",
+    "webp",
+}
 
 
 def is_allowed_image(filename):
-    if not filename or "." not in filename:
+
+    if not filename:
         return False
-    ext = filename.rsplit(".", 1)[1].lower()
-    return ext in ALLOWED_IMAGE_EXTENSIONS
 
+    if "." not in filename:
+        return False
 
-def upload_image(file_storage, key_prefix):
-    """
-    Upload a Werkzeug FileStorage image to R2 and return its object key.
-    Returns None if the file isn't a recognized image type.
-    """
-
-    if not file_storage or not file_storage.filename:
-        return None
-
-    if not is_allowed_image(file_storage.filename):
-        return None
-
-    extension = file_storage.filename.rsplit(".", 1)[1].lower()
-    key = f"{key_prefix}/{uuid.uuid4().hex}.{extension}"
-
-    _client().upload_fileobj(
-        file_storage.stream,
-        _R2_BUCKET_NAME,
-        key,
-        ExtraArgs={"ContentType": file_storage.mimetype or "image/jpeg"},
+    extension = (
+        filename
+        .rsplit(".", 1)[1]
+        .lower()
     )
 
-    return key
+    return extension in ALLOWED_IMAGE_EXTENSIONS
 
+
+# ============================================================
+# UPLOAD IMAGE
+# ============================================================
+
+def upload_image(
+    file_storage,
+    key_prefix
+):
+    """
+    Upload a Flask FileStorage image to Cloudinary.
+
+    Returns the Cloudinary public_id.
+    """
+
+    if not file_storage:
+        return None
+
+    if not file_storage.filename:
+        return None
+
+    if not is_allowed_image(
+        file_storage.filename
+    ):
+        return None
+
+    if not cloudinary_is_configured():
+
+        raise RuntimeError(
+            _configuration_error()
+        )
+
+
+    # --------------------------------------------------------
+    # Clean folder name
+    # --------------------------------------------------------
+
+    folder = str(
+        key_prefix or "uploads"
+    ).strip("/")
+
+
+    # --------------------------------------------------------
+    # Upload to Cloudinary
+    # --------------------------------------------------------
+
+    result = cloudinary.uploader.upload(
+        file_storage.stream,
+
+        folder=folder,
+
+        public_id=uuid.uuid4().hex,
+
+        resource_type="image",
+
+        overwrite=False,
+
+        unique_filename=True,
+
+        use_filename=False,
+    )
+
+
+    # --------------------------------------------------------
+    # Return Cloudinary public ID
+    # --------------------------------------------------------
+
+    return result.get("public_id")
+
+
+# ============================================================
+# GET PUBLIC URL
+# ============================================================
 
 def public_url(key):
-    """Build the public URL for an object key. Returns None if key is falsy."""
+    """
+    Convert a Cloudinary public_id into a secure URL.
+    """
 
     if not key:
         return None
 
-    if not _R2_PUBLIC_URL:
-        raise RuntimeError("R2_PUBLIC_URL is not configured.")
+    if not cloudinary_is_configured():
 
-    return f"{_R2_PUBLIC_URL}/{key}"
+        raise RuntimeError(
+            _configuration_error()
+        )
+
+    result = cloudinary.CloudinaryImage(
+        key
+    ).build_url(
+        secure=True
+    )
+
+    return result
+
