@@ -1,45 +1,382 @@
 {% extends "admin_base.html" %}
-{% block title %}Company settings{% endblock %}
+
+{% block title %}
+Company Settings
+{% endblock %}
 
 {% block content %}
+
 <section class="form-section wrap">
-    <div class="dash-header">
-        <h1>Company settings</h1>
-        <a class="btn btn-secondary btn-small" href="{{ url_for('admin_dashboard') }}">&larr; Dashboard</a>
+
+```
+<!-- =====================================================
+     PAGE HEADER
+     ===================================================== -->
+
+<div class="dash-header">
+
+    <div>
+        <span class="eyebrow">ADMINISTRATION</span>
+
+        <h1>
+            Company Settings
+        </h1>
+
+        <p class="page-description">
+            Manage your company information and branding.
+        </p>
     </div>
 
-    {% if settings.logo_url %}
-    <img src="{{ settings.logo_url }}" alt="Current logo" class="current-logo">
-    {% endif %}
+    <a
+        class="btn btn-secondary btn-small"
+        href="{{ url_for('admin_dashboard') }}"
+    >
+        &larr; Dashboard
+    </a>
 
-    <form class="form-card" method="POST" enctype="multipart/form-data">
-        <div class="field">
-            <label for="company_name">Company name</label>
-            <input type="text" id="company_name" name="company_name" value="{{ settings.company_name or '' }}" required>
+</div>
+
+
+<!-- =====================================================
+     CURRENT LOGO
+     ===================================================== -->
+
+<div class="settings-preview-card">
+
+    <div class="settings-preview-header">
+
+        <div>
+            <h2>Company Logo</h2>
+
+            <p>
+                Your logo is displayed throughout the customer
+                support portal.
+            </p>
         </div>
 
-        <div class="field">
-            <label for="location">Location <span class="hint">(optional)</span></label>
-            <input type="text" id="location" name="location" value="{{ settings.location or '' }}">
-        </div>
+    </div>
 
-        <div class="field-row">
-            <div class="field">
-                <label for="phone">Phone <span class="hint">(optional)</span></label>
-                <input type="tel" id="phone" name="phone" value="{{ settings.phone or '' }}">
+
+    <div class="logo-preview">
+
+        {% if settings.logo_url %}
+
+            <img
+                src="{{ settings.logo_url }}"
+                alt="{{ settings.company_name or 'Company' }} logo"
+                class="current-logo"
+                loading="lazy"
+            >
+
+        {% else %}
+
+            <div class="logo-placeholder">
+
+                <span class="logo-placeholder-icon">
+                    🏢
+                </span>
+
+                <strong>
+                    No logo uploaded
+                </strong>
+
+                <span>
+                    Upload your company logo below.
+                </span>
+
             </div>
-            <div class="field">
-                <label for="email">Contact email <span class="hint">(optional)</span></label>
-                <input type="email" id="email" name="email" value="{{ settings.email or '' }}">
-            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     COMPANY INFORMATION
+     ===================================================== -->
+
+<form
+    class="form-card settings-form"
+    method="POST"
+    enctype="multipart/form-data"
+>
+
+    <div class="form-card-header">
+
+        <div>
+
+            <span class="eyebrow">
+                BUSINESS INFORMATION
+            </span>
+
+            <h2>
+                Company Details
+            </h2>
+
+            <p>
+                Keep your company information up to date.
+            </p>
+
         </div>
+
+    </div>
+
+
+    <!-- =================================================
+         COMPANY NAME
+         ================================================= -->
+
+    <div class="field">
+
+        <label for="company_name">
+            Company Name
+        </label>
+
+        <input
+            type="text"
+            id="company_name"
+            name="company_name"
+            value="{{ settings.company_name or '' }}"
+            placeholder="Enter your company name"
+            autocomplete="organization"
+            required
+        >
+
+        <small class="hint">
+            This name will appear across the portal.
+        </small>
+
+    </div>
+
+
+    <!-- =================================================
+         LOCATION
+         ================================================= -->
+
+    <div class="field">
+
+        <label for="location">
+            Location
+            <span class="hint">
+                (optional)
+            </span>
+        </label>
+
+        <input
+            type="text"
+            id="location"
+            name="location"
+            value="{{ settings.location or '' }}"
+            placeholder="Enter company location"
+            autocomplete="street-address"
+        >
+
+    </div>
+
+
+    <!-- =================================================
+         PHONE + EMAIL
+         ================================================= -->
+
+    <div class="field-row">
 
         <div class="field">
-            <label for="logo">Logo <span class="hint">(optional &mdash; replaces the current one)</span></label>
-            <input type="file" id="logo" name="logo" accept="image/*">
+
+            <label for="phone">
+                Phone
+                <span class="hint">
+                    (optional)
+                </span>
+            </label>
+
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value="{{ settings.phone or '' }}"
+                placeholder="Enter phone number"
+                autocomplete="tel"
+            >
+
         </div>
 
-        <button class="btn btn-primary" type="submit">Save settings</button>
-    </form>
+
+        <div class="field">
+
+            <label for="email">
+                Contact Email
+                <span class="hint">
+                    (optional)
+                </span>
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                value="{{ settings.email or '' }}"
+                placeholder="company@example.com"
+                autocomplete="email"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         LOGO UPLOAD
+         ================================================= -->
+
+    <div class="field">
+
+        <label for="logo">
+            Company Logo
+            <span class="hint">
+                (optional)
+            </span>
+        </label>
+
+
+        <div class="upload-box">
+
+            <input
+                type="file"
+                id="logo"
+                name="logo"
+                accept=".png,.jpg,.jpeg,.gif,.webp"
+            >
+
+            <div class="upload-help">
+
+                <strong>
+                    Upload a new logo
+                </strong>
+
+                <span>
+                    PNG, JPG, JPEG, GIF or WEBP
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <small class="hint">
+            Uploading a new logo will replace the current logo.
+        </small>
+
+    </div>
+
+
+    <!-- =================================================
+         ACTIONS
+         ================================================= -->
+
+    <div class="form-actions">
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="btn btn-secondary"
+        >
+            Cancel
+        </a>
+
+        <button
+            class="btn btn-primary"
+            type="submit"
+        >
+            Save Settings
+        </button>
+
+    </div>
+
+</form>
+```
+
 </section>
+
+<!-- =========================================================
+     LOGO PREVIEW JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const logoInput = document.getElementById("logo");
+
+    if (!logoInput) {
+        return;
+    }
+
+
+    logoInput.addEventListener("change", function () {
+
+        const file = this.files && this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+
+        const allowedTypes = [
+            "image/png",
+            "image/jpeg",
+            "image/gif",
+            "image/webp"
+        ];
+
+
+        if (!allowedTypes.includes(file.type)) {
+
+            alert(
+                "Please select a PNG, JPG, JPEG, GIF, or WEBP image."
+            );
+
+            this.value = "";
+
+            return;
+        }
+
+
+        const maxSize = 5 * 1024 * 1024;
+
+        if (file.size > maxSize) {
+
+            alert(
+                "The logo must not be larger than 5 MB."
+            );
+
+            this.value = "";
+
+            return;
+        }
+
+
+        const preview = document.querySelector(
+            ".current-logo"
+        );
+
+
+        if (preview) {
+
+            const objectUrl = URL.createObjectURL(file);
+
+            preview.src = objectUrl;
+
+            preview.onload = function () {
+                URL.revokeObjectURL(objectUrl);
+            };
+
+        }
+
+    });
+
+});
+
+</script>
+
 {% endblock %}
