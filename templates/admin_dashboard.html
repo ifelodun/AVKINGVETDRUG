@@ -1,35 +1,491 @@
 {% extends "admin_base.html" %}
-{% block title %}Admin dashboard{% endblock %}
+
+{% block title %}
+    Admin Dashboard | {{ company.company_name }}
+{% endblock %}
+
 
 {% block content %}
-<section class="dash-section wrap">
-    <div class="dash-header">
-        <h1>Complaints</h1>
-        <div class="hero-actions">
-            
+
+<div class="dashboard-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <span class="dashboard-eyebrow">
+                CUSTOMER SUPPORT
+            </span>
+
+            <h1>
+                Complaints
+            </h1>
+
+            <p>
+                Monitor, review and manage customer complaints
+                from one central workspace.
+            </p>
+
         </div>
+
+
+        <div class="dashboard-header-actions">
+
+            <a
+                href="{{ url_for('admin_updates') }}"
+                class="dashboard-action-button secondary"
+            >
+                Manage Updates
+            </a>
+
+        </div>
+
     </div>
 
-    <div class="filter-row">
-        <a class="filter-pill {% if status_filter == 'all' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='all') }}">All</a>
-        <a class="filter-pill {% if status_filter == 'open' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='open') }}">Open ({{ counts.get('open', 0) }})</a>
-        <a class="filter-pill {% if status_filter == 'in_progress' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='in_progress') }}">In progress ({{ counts.get('in_progress', 0) }})</a>
-        <a class="filter-pill {% if status_filter == 'resolved' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='resolved') }}">Resolved ({{ counts.get('resolved', 0) }})</a>
+
+
+    <!-- =====================================================
+         STATISTICS
+         ===================================================== -->
+
+    <div class="complaint-stat-grid">
+
+
+        <!-- ALL -->
+
+        <a
+            href="{{ url_for('admin_dashboard', status='all') }}"
+            class="complaint-stat-card
+            {% if status_filter == 'all' %}
+                selected
+            {% endif %}"
+        >
+
+            <div class="stat-card-top">
+
+                <span class="stat-label">
+                    Total Complaints
+                </span>
+
+                <span class="stat-icon">
+                    ▦
+                </span>
+
+            </div>
+
+            <strong class="stat-number">
+                {{ counts.get('all', 0) }}
+            </strong>
+
+            <span class="stat-description">
+                All submitted complaints
+            </span>
+
+        </a>
+
+
+
+        <!-- OPEN -->
+
+        <a
+            href="{{ url_for('admin_dashboard', status='open') }}"
+            class="complaint-stat-card
+            {% if status_filter == 'open' %}
+                selected
+            {% endif %}"
+        >
+
+            <div class="stat-card-top">
+
+                <span class="stat-label">
+                    Open
+                </span>
+
+                <span class="stat-icon">
+                    !
+                </span>
+
+            </div>
+
+            <strong class="stat-number">
+                {{ counts.get('open', 0) }}
+            </strong>
+
+            <span class="stat-description">
+                Awaiting attention
+            </span>
+
+        </a>
+
+
+
+        <!-- IN PROGRESS -->
+
+        <a
+            href="{{ url_for('admin_dashboard', status='in_progress') }}"
+            class="complaint-stat-card
+            {% if status_filter == 'in_progress' %}
+                selected
+            {% endif %}"
+        >
+
+            <div class="stat-card-top">
+
+                <span class="stat-label">
+                    In Progress
+                </span>
+
+                <span class="stat-icon">
+                    ◐
+                </span>
+
+            </div>
+
+            <strong class="stat-number">
+                {{ counts.get('in_progress', 0) }}
+            </strong>
+
+            <span class="stat-description">
+                Currently being handled
+            </span>
+
+        </a>
+
+
+
+        <!-- RESOLVED -->
+
+        <a
+            href="{{ url_for('admin_dashboard', status='resolved') }}"
+            class="complaint-stat-card
+            {% if status_filter == 'resolved' %}
+                selected
+            {% endif %}"
+        >
+
+            <div class="stat-card-top">
+
+                <span class="stat-label">
+                    Resolved
+                </span>
+
+                <span class="stat-icon">
+                    ✓
+                </span>
+
+            </div>
+
+            <strong class="stat-number">
+                {{ counts.get('resolved', 0) }}
+            </strong>
+
+            <span class="stat-description">
+                Successfully completed
+            </span>
+
+        </a>
+
     </div>
 
-    {% if not complaints %}
-    <div class="empty-state">No complaints here.</div>
-    {% endif %}
 
-    {% for c in complaints %}
-    <a class="complaint-row" href="{{ url_for('admin_complaint_detail', tracking_code=c.tracking_code) }}">
-        <div class="complaint-main">
-            <div class="complaint-code">{{ c.tracking_code }}</div>
-            <div class="complaint-subject">{{ c.subject }}</div>
-            <div class="complaint-meta">{{ c.name }} &middot; {{ c.updated_at.strftime('%d %b %Y, %H:%M') }}</div>
+
+    <!-- =====================================================
+         COMPLAINT WORKSPACE
+         ===================================================== -->
+
+    <section class="complaints-panel">
+
+
+        <!-- PANEL HEADER -->
+
+        <div class="complaints-panel-header">
+
+            <div>
+
+                <span class="panel-eyebrow">
+                    CASE MANAGEMENT
+                </span>
+
+                <h2>
+                    Complaint Records
+                </h2>
+
+            </div>
+
+
+            <div class="complaint-result-count">
+
+                {% if complaints %}
+
+                    {{ complaints|length }}
+                    complaint{% if complaints|length != 1 %}s{% endif %}
+
+                {% else %}
+
+                    0 complaints
+
+                {% endif %}
+
+            </div>
+
         </div>
-        <span class="status-badge status-{{ c.status }}">{{ c.status.replace('_', ' ') }}</span>
-    </a>
-    {% endfor %}
-</section>
+
+
+
+        <!-- =================================================
+             FILTERS
+             ================================================= -->
+
+        <div class="complaint-filters">
+
+            <a
+                href="{{ url_for('admin_dashboard', status='all') }}"
+                class="complaint-filter
+                {% if status_filter == 'all' %}
+                    active
+                {% endif %}"
+            >
+                All
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_dashboard', status='open') }}"
+                class="complaint-filter
+                {% if status_filter == 'open' %}
+                    active
+                {% endif %}"
+            >
+                Open
+
+                <span>
+                    {{ counts.get('open', 0) }}
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_dashboard', status='in_progress') }}"
+                class="complaint-filter
+                {% if status_filter == 'in_progress' %}
+                    active
+                {% endif %}"
+            >
+                In Progress
+
+                <span>
+                    {{ counts.get('in_progress', 0) }}
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_dashboard', status='resolved') }}"
+                class="complaint-filter
+                {% if status_filter == 'resolved' %}
+                    active
+                {% endif %}"
+            >
+                Resolved
+
+                <span>
+                    {{ counts.get('resolved', 0) }}
+                </span>
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             TABLE HEADER
+             ================================================= -->
+
+        {% if complaints %}
+
+        <div class="complaints-table">
+
+
+            <div class="complaints-table-header">
+
+                <span>
+                    Complaint
+                </span>
+
+                <span>
+                    Customer
+                </span>
+
+                <span>
+                    Last Updated
+                </span>
+
+                <span>
+                    Status
+                </span>
+
+                <span>
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 COMPLAINT ROWS
+                 ================================================= -->
+
+            {% for c in complaints %}
+
+            <a
+                href="{{ url_for(
+                    'admin_complaint_detail',
+                    tracking_code=c.tracking_code
+                ) }}"
+                class="complaint-table-row"
+            >
+
+
+                <!-- COMPLAINT -->
+
+                <div class="complaint-record">
+
+                    <span class="complaint-code">
+                        {{ c.tracking_code }}
+                    </span>
+
+                    <strong>
+                        {{ c.subject }}
+                    </strong>
+
+                </div>
+
+
+
+                <!-- CUSTOMER -->
+
+                <div class="complaint-customer">
+
+                    <div class="customer-avatar">
+
+                        {{ c.name[:1]|upper }}
+
+                    </div>
+
+                    <span>
+                        {{ c.name }}
+                    </span>
+
+                </div>
+
+
+
+                <!-- UPDATED -->
+
+                <div class="complaint-date">
+
+                    <strong>
+                        {{ c.updated_at.strftime('%d %b %Y') }}
+                    </strong>
+
+                    <span>
+                        {{ c.updated_at.strftime('%H:%M') }}
+                    </span>
+
+                </div>
+
+
+
+                <!-- STATUS -->
+
+                <div>
+
+                    <span
+                        class="professional-status
+                        status-{{ c.status }}"
+                    >
+
+                        <span class="status-dot"></span>
+
+                        {{ c.status.replace('_', ' ')|title }}
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- ARROW -->
+
+                <div class="complaint-arrow">
+
+                    &rarr;
+
+                </div>
+
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- =================================================
+             EMPTY STATE
+             ================================================= -->
+
+        <div class="complaints-empty">
+
+            <div class="empty-icon">
+                ✓
+            </div>
+
+            <h3>
+                No complaints found
+            </h3>
+
+            <p>
+
+                There are currently no complaints matching
+                the selected status.
+
+            </p>
+
+
+            {% if status_filter != 'all' %}
+
+                <a
+                    href="{{ url_for(
+                        'admin_dashboard',
+                        status='all'
+                    ) }}"
+                    class="dashboard-action-button secondary"
+                >
+                    View All Complaints
+                </a>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+    </section>
+
+
+</div>
+
 {% endblock %}
