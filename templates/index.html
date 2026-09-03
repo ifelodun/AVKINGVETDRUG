@@ -1,51 +1,364 @@
 {% extends "base.html" %}
-{% block title %}{{ company.company_name }}{% endblock %}
+
+{% block title %}
+    {{ company.company_name }} | Customer Support
+{% endblock %}
+
 
 {% block content %}
-<section class="hero wrap">
-    <div class="hero-company">
-        {% if company.logo_url %}<img src="{{ company.logo_url }}" alt="{{ company.company_name }}" class="hero-logo">{% endif %}
-        <div>
-            <div class="hero-company-name">{{ company.company_name }}</div>
-            {% if company.location or company.phone %}
-            <div class="hero-company-meta">
-                {% if company.location %}{{ company.location }}{% endif %}
-                {% if company.location and company.phone %}<span class="dot">&middot;</span>{% endif %}
-                {% if company.phone %}{{ company.phone }}{% endif %}
+
+
+<!-- =========================================================
+     HERO
+     ========================================================= -->
+
+<section class="home-hero">
+
+    <div class="page-container">
+
+        <div class="hero-grid">
+
+
+            <!-- LEFT: BRAND -->
+
+            <div class="hero-brand-panel">
+
+                {% if company.logo_url %}
+
+                    <div class="hero-logo-box">
+
+                        <img
+                            src="{{ company.logo_url }}"
+                            alt="{{ company.company_name }} logo"
+                            class="hero-logo"
+                        >
+
+                    </div>
+
+                {% else %}
+
+                    <div class="hero-logo-box hero-logo-placeholder">
+
+                        <span>
+                            {{ company.company_name[:1] }}
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
             </div>
-            {% endif %}
+
+
+            <!-- RIGHT: CONTENT -->
+
+            <div class="hero-content">
+
+                <span class="hero-eyebrow">
+                    CUSTOMER SUPPORT
+                </span>
+
+
+                <h1>
+                    Tell us what went wrong.
+                    <span>
+                        We'll make it right.
+                    </span>
+                </h1>
+
+
+                <p class="hero-description">
+
+                    Your feedback matters to us. Report an issue,
+                    share the details, and our support team will
+                    review your complaint and respond as quickly
+                    as possible.
+
+                </p>
+
+
+                {% if company.location or company.phone %}
+
+                    <div class="hero-company-details">
+
+                        {% if company.location %}
+
+                            <span>
+                                <strong>Location</strong>
+                                {{ company.location }}
+                            </span>
+
+                        {% endif %}
+
+
+                        {% if company.phone %}
+
+                            <span>
+                                <strong>Phone</strong>
+                                {{ company.phone }}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <div class="hero-actions">
+
+                    <a
+                        href="{{ url_for('submit_complaint') }}"
+                        class="home-primary-button"
+                    >
+                        Report an Issue
+                        <span>&rarr;</span>
+                    </a>
+
+
+                    <a
+                        href="{{ url_for('track_complaint') }}"
+                        class="home-secondary-button"
+                    >
+                        Track a Complaint
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
-    <h1>Tell us what went wrong. We'll make it right.</h1>
-    <p class="hero-sub">Send a complaint with photos if it helps explain the issue. We'll reply here, and you can check back anytime with your tracking code.</p>
-    <div class="hero-actions">
-        <a class="btn btn-primary" href="{{ url_for('submit_complaint') }}">Report an issue</a>
-        <a class="btn btn-secondary" href="{{ url_for('track_complaint') }}">Track a complaint</a>
-    </div>
 </section>
+
+
+<!-- =========================================================
+     HOW IT WORKS
+     ========================================================= -->
+
+<section class="how-section">
+
+    <div class="page-container">
+
+        <div class="section-heading">
+
+            <span>
+                SIMPLE &amp; TRANSPARENT
+            </span>
+
+            <h2>
+                How our support works
+            </h2>
+
+            <p>
+                Getting help is simple. Submit your complaint,
+                keep your tracking code, and follow the conversation
+                from anywhere.
+            </p>
+
+        </div>
+
+
+        <div class="steps-grid">
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    01
+                </div>
+
+                <h3>
+                    Report the issue
+                </h3>
+
+                <p>
+                    Tell us what happened and provide the relevant
+                    details. You can also attach photos when helpful.
+                </p>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    02
+                </div>
+
+                <h3>
+                    Receive your tracking code
+                </h3>
+
+                <p>
+                    Your complaint receives a unique tracking code
+                    that you can use to check its progress.
+                </p>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    03
+                </div>
+
+                <h3>
+                    Follow the response
+                </h3>
+
+                <p>
+                    Return to the portal whenever you need to view
+                    replies or continue the conversation.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     LATEST UPDATES
+     ========================================================= -->
 
 {% if updates %}
-<section class="home-updates wrap">
-    <div class="home-updates-head">
-        <h2>Latest updates</h2>
-        <a href="{{ url_for('updates_feed') }}">View all</a>
+
+<section class="updates-section">
+
+    <div class="page-container">
+
+        <div class="updates-heading">
+
+            <div>
+
+                <span>
+                    NEWS &amp; INFORMATION
+                </span>
+
+                <h2>
+                    Latest Updates
+                </h2>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('updates_feed') }}"
+                class="view-all-link"
+            >
+                View all
+                &rarr;
+            </a>
+
+        </div>
+
+
+        <div class="updates-grid">
+
+            {% for update in updates %}
+
+            <article class="update-card">
+
+                <div class="update-card-content">
+
+                    <time class="update-date">
+
+                        {{ update.created_at.strftime('%d %b %Y') }}
+
+                    </time>
+
+
+                    <h3>
+                        {{ update.title }}
+                    </h3>
+
+
+                    <p>
+                        {{ update.body }}
+                    </p>
+
+
+                    {% if update.image_urls %}
+
+                    <div class="update-images">
+
+                        {% for img in update.image_urls %}
+
+                            <img
+                                src="{{ img }}"
+                                alt=""
+                                loading="lazy"
+                            >
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
     </div>
 
-    {% for update in updates %}
-    <article class="update-post">
-        <div class="update-date">{{ update.created_at.strftime('%d %b %Y') }}</div>
-        <h3>{{ update.title }}</h3>
-        <p class="update-body">{{ update.body }}</p>
-        {% if update.image_urls %}
-        <div class="update-images">
-            {% for img in update.image_urls %}
-            <img src="{{ img }}" alt="">
-            {% endfor %}
-        </div>
-        {% endif %}
-    </article>
-    {% endfor %}
 </section>
+
 {% endif %}
+
+
+<!-- =========================================================
+     FINAL CTA
+     ========================================================= -->
+
+<section class="final-cta">
+
+    <div class="page-container">
+
+        <div class="final-cta-box">
+
+            <div>
+
+                <span>
+                    NEED ASSISTANCE?
+                </span>
+
+                <h2>
+                    We're here to help.
+                </h2>
+
+                <p>
+                    Submit your complaint and our team will review
+                    it and get back to you.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('submit_complaint') }}"
+                class="home-primary-button"
+            >
+                Report an Issue
+                <span>&rarr;</span>
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
 {% endblock %}
