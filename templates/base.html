@@ -1,15 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <meta name="theme-color"
-          content="#0f5132">
+    <meta
+        name="description"
+        content="{{ company.company_name }} customer support and complaint portal"
+    >
 
     <title>
         {% block title %}
@@ -18,58 +22,61 @@
     </title>
 
     <!-- Google Fonts -->
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
 
     <!-- Main CSS -->
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 
 </head>
+
 
 <body>
 
 <!-- =========================================================
-     PUBLIC HEADER
+     SITE HEADER
      ========================================================= -->
 
 <header class="site-header">
 
-    <div class="header-container">
+    <div class="site-header-inner">
 
         <!-- BRAND -->
-        <a href="{{ url_for('home') }}"
-           class="brand">
+
+        <a
+            href="{{ url_for('home') }}"
+            class="site-brand"
+        >
 
             {% if company.logo_url %}
 
-                <img src="{{ company.logo_url }}"
-                     alt="{{ company.company_name }}"
-                     class="brand-logo">
+                <div class="site-brand-logo">
 
-            {% else %}
+                    <img
+                        src="{{ company.logo_url }}"
+                        alt="{{ company.company_name }}"
+                    >
 
-                <div class="brand-placeholder">
-                    AV
                 </div>
 
             {% endif %}
 
-            <div class="brand-text">
 
-                <strong>
+            <div class="site-brand-text">
+
+                <span class="site-brand-name">
                     {{ company.company_name }}
-                </strong>
+                </span>
 
-                <span>
-                    Customer Support Portal
+                <span class="site-brand-label">
+                    Customer Support
                 </span>
 
             </div>
@@ -77,28 +84,36 @@
         </a>
 
 
-        <!-- DESKTOP NAVIGATION -->
+        <!-- NAVIGATION -->
+
         <nav class="main-nav">
 
-            <a href="{{ url_for('home') }}">
+            <a
+                href="{{ url_for('home') }}"
+                class="nav-link"
+            >
                 Home
             </a>
 
-            <a href="{{ url_for('submit_complaint') }}">
+            <a
+                href="{{ url_for('submit_complaint') }}"
+                class="nav-link"
+            >
                 Report an Issue
             </a>
 
-            <a href="{{ url_for('track_complaint') }}">
+            <a
+                href="{{ url_for('track_complaint') }}"
+                class="nav-link"
+            >
                 Track Complaint
             </a>
 
-            <a href="{{ url_for('updates_feed') }}">
+            <a
+                href="{{ url_for('updates_feed') }}"
+                class="nav-link"
+            >
                 Updates
-            </a>
-
-            <a href="{{ url_for('admin_login') }}"
-               class="admin-nav-link">
-                Admin
             </a>
 
         </nav>
@@ -116,27 +131,15 @@
 
     {% if messages %}
 
-        <div class="flash-container">
+        <div class="flash-wrapper">
 
-            <div class="container">
+            <div class="page-container">
 
-                {% for category, message in messages %}
+                {% for category, msg in messages %}
 
                     <div class="flash flash-{{ category }}">
 
-                        <span class="flash-icon">
-
-                            {% if category == "success" %}
-                                ✓
-                            {% else %}
-                                !
-                            {% endif %}
-
-                        </span>
-
-                        <span>
-                            {{ message }}
-                        </span>
+                        {{ msg }}
 
                     </div>
 
@@ -157,9 +160,7 @@
 
 <main>
 
-    {% block content %}
-
-    {% endblock %}
+    {% block content %}{% endblock %}
 
 </main>
 
@@ -170,99 +171,119 @@
 
 <footer class="site-footer">
 
-    <div class="container footer-grid">
+    <div class="footer-container">
 
-        <div>
+        <div class="footer-grid">
 
-            <div class="footer-brand">
 
-                {% if company.logo_url %}
+            <!-- COMPANY -->
 
-                    <img src="{{ company.logo_url }}"
-                         alt="{{ company.company_name }}">
+            <div class="footer-company">
 
-                {% endif %}
+                <div class="footer-brand">
 
-                <strong>
-                    {{ company.company_name }}
-                </strong>
+                    {% if company.logo_url %}
+
+                        <img
+                            src="{{ company.logo_url }}"
+                            alt="{{ company.company_name }}"
+                        >
+
+                    {% endif %}
+
+                    <div>
+
+                        <strong>
+                            {{ company.company_name }}
+                        </strong>
+
+                        <span>
+                            Customer Support
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <p>
+                    We value your feedback and are committed to
+                    providing reliable customer support.
+                </p>
 
             </div>
 
-            <p>
-                We are committed to providing professional,
-                reliable and responsive customer support.
-            </p>
+
+            <!-- QUICK LINKS -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Quick Links
+                </h3>
+
+                <a href="{{ url_for('home') }}">
+                    Home
+                </a>
+
+                <a href="{{ url_for('submit_complaint') }}">
+                    Report an Issue
+                </a>
+
+                <a href="{{ url_for('track_complaint') }}">
+                    Track Complaint
+                </a>
+
+                <a href="{{ url_for('updates_feed') }}">
+                    Latest Updates
+                </a>
+
+            </div>
+
+
+            <!-- CONTACT -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Contact
+                </h3>
+
+                {% if company.location %}
+
+                    <span>
+                        {{ company.location }}
+                    </span>
+
+                {% endif %}
+
+
+                {% if company.phone %}
+
+                    <span>
+                        {{ company.phone }}
+                    </span>
+
+                {% endif %}
+
+
+                {% if company.email %}
+
+                    <a href="mailto:{{ company.email }}">
+                        {{ company.email }}
+                    </a>
+
+                {% endif %}
+
+            </div>
 
         </div>
 
 
-        <div>
-
-            <h4>
-                Quick Links
-            </h4>
-
-            <a href="{{ url_for('home') }}">
-                Home
-            </a>
-
-            <a href="{{ url_for('submit_complaint') }}">
-                Report an Issue
-            </a>
-
-            <a href="{{ url_for('track_complaint') }}">
-                Track Complaint
-            </a>
-
-            <a href="{{ url_for('updates_feed') }}">
-                Updates
-            </a>
-
-        </div>
-
-
-        <div>
-
-            <h4>
-                Contact
-            </h4>
-
-            {% if company.location %}
-
-                <span>
-                    {{ company.location }}
-                </span>
-
-            {% endif %}
-
-            {% if company.phone %}
-
-                <span>
-                    {{ company.phone }}
-                </span>
-
-            {% endif %}
-
-            {% if company.email %}
-
-                <span>
-                    {{ company.email }}
-                </span>
-
-            {% endif %}
-
-        </div>
-
-    </div>
-
-
-    <div class="footer-bottom">
-
-        <div class="container">
+        <div class="footer-bottom">
 
             <span>
-                © {{ current_year|default(2026) }}
+                &copy; {{ current_year }}
                 {{ company.company_name }}.
                 All rights reserved.
             </span>
@@ -279,4 +300,5 @@
 
 
 </body>
+
 </html>
