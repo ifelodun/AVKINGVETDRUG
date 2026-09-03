@@ -13,6 +13,7 @@ from flask import (
     session,
     flash,
 )
+from storage import upload_image, public_url
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import get_db, init_db
@@ -111,37 +112,71 @@ def admin_required(view_func):
 
 
 def save_message_images(message_id, files, key_prefix):
-    """Upload up to MAX_IMAGES_PER_MESSAGE images and attach them to a message."""
+    """
+    Upload up to MAX_IMAGES_PER_MESSAGE images to Cloudinary
+    and attach them to a complaint message.
+    """
+
+    if not files:
+        return 0
 
     conn = get_db()
+    uploaded_count = 0
 
     try:
-        with conn.cursor() as cur:
 
-            count = 0
+        with conn.cursor() as cur:
 
             for file_storage in files:
 
-                if count >= MAX_IMAGES_PER_MESSAGE:
+                if uploaded_count >= MAX_IMAGES_PER_MESSAGE:
                     break
 
-                if not file_storage or not file_storage.filename:
+                if not file_storage:
                     continue
 
-                key = upload_image(file_storage, key_prefix)
+                if not file_storage.filename:
+                    continue
 
-                if key:
-                    cur.execute(
-                        "INSERT INTO message_images (message_id, image_key) VALUES (%s, %s)",
-                        (message_id, key),
+                key = upload_image(
+                    file_storage,
+                    key_prefix
+                )
+
+                if not key:
+                    continue
+
+                cur.execute(
+                    """
+                    INSERT INTO message_images
+                    (message_id, image_key)
+                    VALUES (%s, %s)
+                    """,
+                    (
+                        message_id,
+                        key
                     )
-                    count += 1
+                )
+
+                uploaded_count += 1
 
         conn.commit()
 
-    finally:
-        conn.close()
+        return uploaded_count
 
+    except Exception:
+
+        conn.rollback()
+
+        app.logger.exception(
+            "Cloudinary message image upload failed."
+        )
+
+        raise
+
+    finally:
+
+        conn.close()
 
 def get_complaint_thread(tracking_code):
     """Fetch a complaint and its full message thread (with images), or None."""
@@ -217,14 +252,11 @@ def get_company_settings():
 
 @app.context_processor
 def inject_company_settings():
-    """
-    Make company settings and common template variables
-    available throughout the application.
-    """
 
     return {
         "company": get_company_settings(),
         "current_year": datetime.now().year,
+        "public_url": public_url
     }
 # ============================================================
 # PUBLIC: HOME
@@ -396,9 +428,27 @@ def view_complaint(tracking_code):
 
         finally:
             conn.close()
-
         files = request.files.getlist("images")
-        save_message_images(message_id, files, f"complaints/{tracking_code}")
+        
+        try:
+        
+            save_message_images(
+                message_id,
+                files,
+                f"complaints/{tracking_code}"
+            )
+        
+        except Exception:
+        
+            app.logger.exception(
+                "Cloudinary upload failed for admin reply."
+            )
+        
+            flash(
+                "Your reply was saved, but the image attachment could not be uploaded. "
+                "Please check your Cloudinary configuration and try again.",
+                "error"
+            )
 
         return redirect(url_for("view_complaint", tracking_code=tracking_code))
 
@@ -572,9 +622,26 @@ def admin_complaint_detail(tracking_code):
 
             finally:
                 conn.close()
-
             files = request.files.getlist("images")
-            save_message_images(message_id, files, f"complaints/{tracking_code}")
+            
+            try:
+            
+                save_message_images(
+                    message_id,
+                    files,
+                    f"complaints/{tracking_code}"
+                )
+            
+            except Exception:
+            
+                app.logger.exception(
+                    "Cloudinary upload failed for customer reply."
+                )
+            
+                flash(
+                    "Your message was saved, but the image attachment could not be uploaded.",
+                    "error"
+                )
 
         elif action == "set_status":
 
@@ -704,16 +771,45 @@ def admin_settings():
 
         logo_key = settings.get("logo_key")
         logo_file = request.files.get("logo")
-
         if logo_file and logo_file.filename:
-            uploaded_key = upload_image(logo_file, "company_logo")
-
+        
+            try:
+        
+                uploaded_key = upload_image(
+                    logo_file,
+                    "company_logo"
+                )
+        
+            except Exception:
+        
+                app.logger.exception(
+                    "Cloudinary company logo upload failed."
+                )
+        
+                flash(
+                    "The logo could not be uploaded. "
+                    "Please check your Cloudinary configuration.",
+                    "error"
+                )
+        
+                return redirect(
+                    url_for("admin_settings")
+                )
+        
             if uploaded_key:
+        
                 logo_key = uploaded_key
+        
             else:
-                flash("Logo must be a PNG, JPG, GIF, or WEBP image.", "error")
-                return redirect(url_for("admin_settings"))
-
+        
+                flash(
+                    "Logo must be a PNG, JPG, GIF, or WEBP image.",
+                    "error"
+                )
+        
+                return redirect(
+                    url_for("admin_settings")
+                )
         conn = get_db()
 
         try:
