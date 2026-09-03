@@ -1,44 +1,568 @@
 {% extends "base.html" %}
-{% block title %}Report an issue{% endblock %}
+
+{% block title %}
+Report an Issue
+{% endblock %}
 
 {% block content %}
+
 <section class="form-section wrap">
-    <h1>Report an issue</h1>
-    <p class="hero-sub">Give us the details and we'll get back to you. You'll receive a tracking code to follow the reply.</p>
 
-    <form class="form-card" method="POST" enctype="multipart/form-data">
-        <div class="field-row">
-            <div class="field">
-                <label for="name">Your name</label>
-                <input type="text" id="name" name="name" value="{{ form.name if form else '' }}" required>
-            </div>
-            <div class="field">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="{{ form.email if form else '' }}" required>
-            </div>
-        </div>
+```
+<!-- ======================================================
+     PAGE HEADER
+     ====================================================== -->
+
+<div class="dash-header">
+
+    <div>
+
+        <h1>
+            Report an Issue
+        </h1>
+
+        <p class="hero-sub">
+            Tell us what happened and provide as much detail
+            as possible. We'll review your complaint and get
+            back to you.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     COMPLAINT FORM
+     ====================================================== -->
+
+<form
+    class="form-card complaint-form"
+    method="POST"
+    enctype="multipart/form-data"
+    id="complaintForm"
+>
+
+    <!-- ==================================================
+         PERSONAL INFORMATION
+         ================================================== -->
+
+    <div class="form-section-heading">
+
+        <h2>
+            Your Information
+        </h2>
+
+        <p>
+            Please provide your contact details so we can
+            respond to your complaint.
+        </p>
+
+    </div>
+
+
+    <div class="field-row">
 
         <div class="field">
-            <label for="phone">Phone <span class="hint">(optional)</span></label>
-            <input type="tel" id="phone" name="phone" value="{{ form.phone if form else '' }}">
+
+            <label for="name">
+                Your Name
+            </label>
+
+            <input
+                type="text"
+                id="name"
+                name="name"
+                value="{{ form.name if form else '' }}"
+                maxlength="150"
+                autocomplete="name"
+                placeholder="Enter your full name"
+                required
+            >
+
         </div>
+
 
         <div class="field">
-            <label for="subject">Subject</label>
-            <input type="text" id="subject" name="subject" placeholder="e.g. Wrong item delivered" value="{{ form.subject if form else '' }}" required>
+
+            <label for="email">
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                value="{{ form.email if form else '' }}"
+                maxlength="200"
+                autocomplete="email"
+                placeholder="you@example.com"
+                required
+            >
+
         </div>
 
-        <div class="field">
-            <label for="message">Tell us what happened</label>
-            <textarea id="message" name="message" required>{{ form.message if form else '' }}</textarea>
-        </div>
+    </div>
 
-        <div class="field">
-            <label for="images">Photos <span class="hint">(optional, up to 4)</span></label>
-            <input type="file" id="images" name="images" accept="image/*" multiple>
-        </div>
 
-        <button class="btn btn-primary" type="submit">Send complaint</button>
-    </form>
+    <!-- ==================================================
+         PHONE
+         ================================================== -->
+
+    <div class="field">
+
+        <label for="phone">
+
+            Phone Number
+
+            <span class="hint">
+                (optional)
+            </span>
+
+        </label>
+
+        <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value="{{ form.phone if form else '' }}"
+            maxlength="30"
+            autocomplete="tel"
+            placeholder="Enter your phone number"
+        >
+
+    </div>
+
+
+    <!-- ==================================================
+         COMPLAINT DETAILS
+         ================================================== -->
+
+    <div class="form-section-heading complaint-details-heading">
+
+        <h2>
+            Complaint Details
+        </h2>
+
+        <p>
+            Give us enough information to understand and
+            resolve the issue.
+        </p>
+
+    </div>
+
+
+    <!-- SUBJECT -->
+
+    <div class="field">
+
+        <label for="subject">
+            Subject
+        </label>
+
+        <input
+            type="text"
+            id="subject"
+            name="subject"
+            maxlength="200"
+            placeholder="e.g. Wrong item delivered"
+            value="{{ form.subject if form else '' }}"
+            required
+        >
+
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <div class="field">
+
+        <label for="message">
+            Tell Us What Happened
+        </label>
+
+        <textarea
+            id="message"
+            name="message"
+            rows="8"
+            maxlength="5000"
+            placeholder="Please describe the issue clearly..."
+            required
+        >{{ form.message if form else '' }}</textarea>
+
+        <small class="hint">
+            Please provide specific details that may help us
+            investigate your complaint.
+        </small>
+
+    </div>
+
+
+    <!-- ==================================================
+         PHOTOS
+         ================================================== -->
+
+    <div class="field">
+
+        <label for="images">
+
+            Supporting Photos
+
+            <span class="hint">
+                (optional)
+            </span>
+
+        </label>
+
+
+        <input
+            type="file"
+            id="images"
+            name="images"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+        >
+
+
+        <small
+            id="imageStatus"
+            class="hint"
+        >
+            You may upload up to 4 images.
+            Maximum 2 MB per image.
+        </small>
+
+
+        <!-- IMAGE PREVIEW -->
+
+        <div
+            id="imagePreview"
+            class="complaint-image-preview"
+            style="display:none;"
+        ></div>
+
+    </div>
+
+
+    <!-- ==================================================
+         SUBMIT
+         ================================================== -->
+
+    <div class="complaint-submit">
+
+        <button
+            class="btn btn-primary"
+            type="submit"
+            id="submitBtn"
+        >
+            Send Complaint
+        </button>
+
+        <p class="form-security-note">
+            Your complaint will receive a unique tracking
+            code after submission.
+        </p>
+
+    </div>
+
+</form>
+```
+
 </section>
+
+<!-- ==========================================================
+     JAVASCRIPT
+     ========================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const form =
+            document.getElementById("complaintForm");
+
+        const imageInput =
+            document.getElementById("images");
+
+        const imageStatus =
+            document.getElementById("imageStatus");
+
+        const imagePreview =
+            document.getElementById("imagePreview");
+
+        const submitButton =
+            document.getElementById("submitBtn");
+
+
+        const MAX_FILES = 4;
+
+        const MAX_FILE_SIZE =
+            2 * 1024 * 1024; // 2 MB
+
+
+        const ALLOWED_TYPES = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+
+        // ======================================================
+        // IMAGE SELECTION
+        // ======================================================
+
+        imageInput.addEventListener(
+            "change",
+            function () {
+
+                const files =
+                    Array.from(
+                        imageInput.files
+                    );
+
+
+                imagePreview.innerHTML = "";
+
+                imagePreview.style.display =
+                    "none";
+
+
+                // ------------------------------------------------
+                // Maximum number of files
+                // ------------------------------------------------
+
+                if (
+                    files.length >
+                    MAX_FILES
+                ) {
+
+                    alert(
+                        "You can upload a maximum of 4 images."
+                    );
+
+                    imageInput.value = "";
+
+                    imageStatus.textContent =
+                        "Please select no more than 4 images.";
+
+                    return;
+                }
+
+
+                // ------------------------------------------------
+                // Validate each image
+                // ------------------------------------------------
+
+                for (const file of files) {
+
+                    if (
+                        !ALLOWED_TYPES.includes(
+                            file.type
+                        )
+                    ) {
+
+                        alert(
+                            `"${file.name}" is not a supported image format.`
+                        );
+
+                        imageInput.value = "";
+
+                        imageStatus.textContent =
+                            "Only JPG, JPEG, PNG and WEBP images are allowed.";
+
+                        return;
+                    }
+
+
+                    if (
+                        file.size >
+                        MAX_FILE_SIZE
+                    ) {
+
+                        alert(
+                            `"${file.name}" is larger than 2 MB.`
+                        );
+
+                        imageInput.value = "";
+
+                        imageStatus.textContent =
+                            "Each image must be 2 MB or less.";
+
+                        return;
+                    }
+
+                }
+
+
+                // ------------------------------------------------
+                // Display status
+                // ------------------------------------------------
+
+                if (files.length === 0) {
+
+                    imageStatus.textContent =
+                        "You may upload up to 4 images. Maximum 2 MB per image.";
+
+                    return;
+                }
+
+
+                imageStatus.textContent =
+                    `${files.length} image(s) selected.`;
+
+
+                // ------------------------------------------------
+                // Preview images
+                // ------------------------------------------------
+
+                imagePreview.style.display =
+                    "grid";
+
+
+                files.forEach(
+                    function (file) {
+
+                        const reader =
+                            new FileReader();
+
+
+                        reader.onload =
+                            function (event) {
+
+                                const wrapper =
+                                    document.createElement(
+                                        "div"
+                                    );
+
+                                wrapper.className =
+                                    "complaint-preview-item";
+
+
+                                const image =
+                                    document.createElement(
+                                        "img"
+                                    );
+
+                                image.src =
+                                    event.target.result;
+
+                                image.alt =
+                                    file.name;
+
+
+                                wrapper.appendChild(
+                                    image
+                                );
+
+
+                                imagePreview.appendChild(
+                                    wrapper
+                                );
+
+                            };
+
+
+                        reader.readAsDataURL(
+                            file
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        // ======================================================
+        // FORM SUBMISSION VALIDATION
+        // ======================================================
+
+        form.addEventListener(
+            "submit",
+            function (event) {
+
+                const files =
+                    Array.from(
+                        imageInput.files
+                    );
+
+
+                // ------------------------------------------------
+                // Maximum files
+                // ------------------------------------------------
+
+                if (
+                    files.length >
+                    MAX_FILES
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "You can upload a maximum of 4 images."
+                    );
+
+                    return;
+                }
+
+
+                // ------------------------------------------------
+                // Validate files
+                // ------------------------------------------------
+
+                for (const file of files) {
+
+                    if (
+                        !ALLOWED_TYPES.includes(
+                            file.type
+                        )
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            `"${file.name}" is not a supported image format.`
+                        );
+
+                        return;
+                    }
+
+
+                    if (
+                        file.size >
+                        MAX_FILE_SIZE
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            `"${file.name}" is larger than 2 MB. Maximum size is 2 MB.`
+                        );
+
+                        return;
+                    }
+
+                }
+
+
+                // ------------------------------------------------
+                // Prevent double submission
+                // ------------------------------------------------
+
+                submitButton.disabled =
+                    true;
+
+                submitButton.textContent =
+                    "Sending Complaint...";
+
+            }
+        );
+
+    }
+);
+
+</script>
+
 {% endblock %}
