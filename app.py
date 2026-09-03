@@ -215,11 +215,17 @@ def get_company_settings():
     finally:
         conn.close()
 
-
 @app.context_processor
 def inject_company_settings():
-    """Makes `company` available in every template without passing it manually."""
-    return {"company": get_company_settings()}
+    """
+    Make company settings and common template variables
+    available throughout the application.
+    """
+
+    return {
+        "company": get_company_settings(),
+        "current_year": datetime.now().year,
+    }
 # ============================================================
 # PUBLIC: HOME
 # ============================================================
