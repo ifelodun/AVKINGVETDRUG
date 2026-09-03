@@ -178,6 +178,28 @@ def save_message_images(message_id, files, key_prefix):
 
         conn.close()
 
+import os
+
+# ============================================================
+# ADMIN UPDATE IMAGE UPLOAD SETTINGS
+# ============================================================
+
+MAX_IMAGES_PER_MESSAGE = 4
+
+# Maximum size of each individual image: 2 MB
+MAX_UPDATE_IMAGE_SIZE = 2 * 1024 * 1024
+
+# Maximum total HTTP request size.
+# Allows 4 × 2 MB images plus multipart/form overhead.
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
+
+ALLOWED_UPDATE_IMAGE_EXTENSIONS = {
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+}
+
 def get_complaint_thread(tracking_code):
     """Fetch a complaint and its full message thread (with images), or None."""
 
@@ -677,80 +699,356 @@ def admin_complaint_detail(tracking_code):
 # ============================================================
 # ADMIN: UPDATES (ANNOUNCEMENTS)
 # ============================================================
-
 @app.route("/admin/updates", methods=["GET", "POST"])
 @admin_required
 def admin_updates():
+
+    # ============================================================
+    # POST — CREATE NEW UPDATE
+    # ============================================================
 
     if request.method == "POST":
 
         title = request.form.get("title", "").strip()
         body = request.form.get("body", "").strip()
 
-        if not title or not body:
-            flash("Please fill in both a title and body for the update.", "error")
+        # --------------------------------------------------------
+        # Validate title and body
+        # --------------------------------------------------------
+
+        if not title:
+            flash(
+                "Please enter a title for the update.",
+                "error"
+            )
             return redirect(url_for("admin_updates"))
+
+        if not body:
+            flash(
+                "Please enter the details of the update.",
+                "error"
+            )
+            return redirect(url_for("admin_updates"))
+
+        # --------------------------------------------------------
+        # Get uploaded images
+        # --------------------------------------------------------
+
+        files = [
+            file
+            for file in request.files.getlist("images")
+            if file and file.filename
+        ]
+
+        # --------------------------------------------------------
+        # Maximum number of images
+        # --------------------------------------------------------
+
+        if len(files) > MAX_IMAGES_PER_MESSAGE:
+
+            flash(
+                f"You can upload a maximum of "
+                f"{MAX_IMAGES_PER_MESSAGE} images.",
+                "error"
+            )
+
+            return redirect(
+                url_for("admin_updates")
+            )
+
+        # --------------------------------------------------------
+        # Validate uploaded images BEFORE database operation
+        # --------------------------------------------------------
+
+        for file_storage in files:
+
+            filename = file_storage.filename.strip()
+
+            # ----------------------------------------------------
+            # Check filename
+            # ----------------------------------------------------
+
+            if not filename:
+
+                flash(
+                    "One of the selected files has an invalid name.",
+                    "error"
+                )
+
+                return redirect(
+                    url_for("admin_updates")
+                )
+
+            # ----------------------------------------------------
+            # Check extension
+            # ----------------------------------------------------
+
+            if "." not in filename:
+
+                flash(
+                    f"Invalid image file: {filename}",
+                    "error"
+                )
+
+                return redirect(
+                    url_for("admin_updates")
+                )
+
+            extension = filename.rsplit(
+                ".",
+                1
+            )[1].lower()
+
+            if extension not in ALLOWED_UPDATE_IMAGE_EXTENSIONS:
+
+                flash(
+                    f"Unsupported image format: {filename}. "
+                    "Only JPG, JPEG, PNG and WEBP are allowed.",
+                    "error"
+                )
+
+                return redirect(
+                    url_for("admin_updates")
+                )
+
+            # ----------------------------------------------------
+            # Check individual file size
+            # ----------------------------------------------------
+
+            try:
+
+                file_storage.stream.seek(
+                    0,
+                    os.SEEK_END
+                )
+
+                file_size = file_storage.stream.tell()
+
+                file_storage.stream.seek(0)
+
+            except Exception:
+
+                flash(
+                    f"Could not read {filename}.",
+                    "error"
+                )
+
+                return redirect(
+                    url_for("admin_updates")
+                )
+
+            if file_size > MAX_UPDATE_IMAGE_SIZE:
+
+                flash(
+                    f"{filename} is too large. "
+                    "Each image must be 2 MB or less.",
+                    "error"
+                )
+
+                return redirect(
+                    url_for("admin_updates")
+                )
+
+        # ========================================================
+        # DATABASE
+        # ========================================================
 
         conn = get_db()
 
         try:
+
             with conn.cursor() as cur:
 
-                cur.execute(
-                    "INSERT INTO updates (title, body) VALUES (%s, %s) RETURNING id",
-                    (title, body),
-                )
-                update_id = cur.fetchone()["id"]
+                # ------------------------------------------------
+                # Create update first
+                # ------------------------------------------------
 
-                files = request.files.getlist("images")
-                count = 0
+                cur.execute(
+                    """
+                    INSERT INTO updates
+                        (title, body)
+                    VALUES
+                        (%s, %s)
+                    RETURNING id
+                    """,
+                    (
+                        title,
+                        body
+                    )
+                )
+
+                row = cur.fetchone()
+
+                if not row:
+
+                    raise RuntimeError(
+                        "Failed to create update."
+                    )
+
+                update_id = row["id"]
+
+                # ------------------------------------------------
+                # Upload images
+                # ------------------------------------------------
+
+                uploaded_keys = []
 
                 for file_storage in files:
 
-                    if count >= MAX_IMAGES_PER_MESSAGE:
-                        break
+                    key = upload_image(
+                        file_storage,
+                        "updates"
+                    )
 
-                    if not file_storage or not file_storage.filename:
-                        continue
+                    if not key:
 
-                    key = upload_image(file_storage, "updates")
-
-                    if key:
-                        cur.execute(
-                            "INSERT INTO update_images (update_id, image_key) VALUES (%s, %s)",
-                            (update_id, key),
+                        raise RuntimeError(
+                            "An image could not be uploaded."
                         )
-                        count += 1
+
+                    uploaded_keys.append(key)
+
+                # ------------------------------------------------
+                # Save uploaded image references
+                # ------------------------------------------------
+
+                for image_key in uploaded_keys:
+
+                    cur.execute(
+                        """
+                        INSERT INTO update_images
+                            (
+                                update_id,
+                                image_key
+                            )
+                        VALUES
+                            (
+                                %s,
+                                %s
+                            )
+                        """,
+                        (
+                            update_id,
+                            image_key
+                        )
+                    )
+
+            # ----------------------------------------------------
+            # Commit
+            # ----------------------------------------------------
 
             conn.commit()
 
+            flash(
+                "Update posted successfully.",
+                "success"
+            )
+
+        except Exception as e:
+
+            # ----------------------------------------------------
+            # Rollback if anything fails
+            # ----------------------------------------------------
+
+            conn.rollback()
+
+            app.logger.exception(
+                "Error posting admin update: %s",
+                e
+            )
+
+            flash(
+                "The update could not be posted. "
+                "Please try again.",
+                "error"
+            )
+
         finally:
+
             conn.close()
 
-        flash("Update posted.", "success")
-        return redirect(url_for("admin_updates"))
+        return redirect(
+            url_for("admin_updates")
+        )
+
+    # ============================================================
+    # GET — DISPLAY UPDATES
+    # ============================================================
 
     conn = get_db()
 
     try:
+
         with conn.cursor() as cur:
 
-            cur.execute("SELECT * FROM updates ORDER BY created_at DESC")
+            cur.execute(
+                """
+                SELECT
+                    id,
+                    title,
+                    body,
+                    created_at
+                FROM updates
+                ORDER BY created_at DESC
+                """
+            )
+
             updates = cur.fetchall()
 
+            # ----------------------------------------------------
+            # Load images for each update
+            # ----------------------------------------------------
+
             for update in updates:
+
                 cur.execute(
-                    "SELECT image_key FROM update_images WHERE update_id = %s",
-                    (update["id"],),
+                    """
+                    SELECT
+                        image_key
+                    FROM update_images
+                    WHERE update_id = %s
+                    ORDER BY id ASC
+                    """,
+                    (
+                        update["id"],
+                    )
                 )
+
+                image_rows = cur.fetchall()
+
                 update["image_urls"] = [
-                    public_url(row["image_key"]) for row in cur.fetchall()
+                    public_url(row["image_key"])
+                    for row in image_rows
+                    if row.get("image_key")
                 ]
 
     finally:
+
         conn.close()
 
-    return render_template("admin_updates.html", updates=updates)
+    return render_template(
+        "admin_updates.html",
+        updates=updates
+    )
+
+
+# ================================================================
+# HANDLE REQUEST TOO LARGE
+# ================================================================
+
+@app.errorhandler(413)
+def request_entity_too_large(error):
+
+    flash(
+        "The uploaded files are too large. "
+        "You can upload up to 4 images, "
+        "with each image not exceeding 2 MB.",
+        "error"
+    )
+
+    return redirect(
+        url_for("admin_updates")
+    )
 
 @app.route("/admin/settings", methods=["GET", "POST"])
 @admin_required
