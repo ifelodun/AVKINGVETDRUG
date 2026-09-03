@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,8 +5,15 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="{{ company.company_name }} Administration Portal"
+    >
 
     <title>
         {% block title %}
@@ -15,18 +21,39 @@
         {% endblock %}
     </title>
 
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <!-- =====================================================
+         FONTS
+         ===================================================== -->
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         MAIN STYLESHEET
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+
+    {% block extra_head %}{% endblock %}
 
 </head>
 
@@ -44,102 +71,184 @@
     <aside class="admin-sidebar">
 
 
+        <!-- BRAND -->
         <div class="admin-brand">
 
-            {% if company.logo_url %}
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="admin-brand-link"
+            >
 
-                <img src="{{ company.logo_url }}"
-                     alt="{{ company.company_name }}">
+                <div class="admin-brand-logo">
 
-            {% else %}
+                    {% if company.logo_url %}
 
-                <div class="brand-placeholder">
-                    AV
+                        <img
+                            src="{{ company.logo_url }}"
+                            alt="{{ company.company_name }}"
+                        >
+
+                    {% else %}
+
+                        <span>
+                            AV
+                        </span>
+
+                    {% endif %}
+
                 </div>
 
-            {% endif %}
 
-            <div>
+                <div class="admin-brand-info">
 
-                <strong>
-                    {{ company.company_name }}
-                </strong>
+                    <strong>
+                        {{ company.company_name }}
+                    </strong>
 
-                <span>
-                    Administration
-                </span>
+                    <small>
+                        Administration
+                    </small>
 
-            </div>
+                </div>
+
+            </a>
 
         </div>
 
 
-        <!-- NAVIGATION -->
+        <!-- =================================================
+             NAVIGATION
+             ================================================= -->
 
         <nav class="admin-nav">
 
-            <div class="admin-nav-title">
-                MANAGEMENT
+
+            <div class="admin-nav-section">
+
+                <span class="admin-nav-label">
+                    MANAGEMENT
+                </span>
+
+
+                <a
+                    href="{{ url_for('admin_dashboard') }}"
+                    class="admin-nav-item
+                    {% if request.endpoint == 'admin_dashboard' %}
+                        active
+                    {% endif %}"
+                >
+
+                    <span class="admin-nav-icon">
+                        ▦
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('admin_dashboard') }}"
+                    class="admin-nav-item"
+                >
+
+                    <span class="admin-nav-icon">
+                        ◉
+                    </span>
+
+                    <span>
+                        Complaints
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('admin_updates') }}"
+                    class="admin-nav-item
+                    {% if request.endpoint == 'admin_updates' %}
+                        active
+                    {% endif %}"
+                >
+
+                    <span class="admin-nav-icon">
+                        ◆
+                    </span>
+
+                    <span>
+                        Updates
+                    </span>
+
+                </a>
+
             </div>
 
 
-            <a href="{{ url_for('admin_dashboard') }}"
-               class="admin-nav-item">
+            <!-- SYSTEM -->
 
-                <span>▣</span>
+            <div class="admin-nav-section">
 
-                Dashboard
-
-            </a>
-
-
-            <a href="{{ url_for('admin_dashboard') }}"
-               class="admin-nav-item">
-
-                <span>◉</span>
-
-                Complaints
-
-            </a>
+                <span class="admin-nav-label">
+                    SYSTEM
+                </span>
 
 
-            <a href="{{ url_for('admin_updates') }}"
-               class="admin-nav-item">
+                <a
+                    href="{{ url_for('admin_settings') }}"
+                    class="admin-nav-item
+                    {% if request.endpoint == 'admin_settings' %}
+                        active
+                    {% endif %}"
+                >
 
-                <span>◆</span>
+                    <span class="admin-nav-icon">
+                        ⚙
+                    </span>
 
-                Updates
+                    <span>
+                        Company Settings
+                    </span>
 
-            </a>
+                </a>
 
-
-            <div class="admin-nav-title">
-                SYSTEM
             </div>
 
-
-            <a href="{{ url_for('admin_settings') }}"
-               class="admin-nav-item">
-
-                <span>⚙</span>
-
-                Company Settings
-
-            </a>
 
         </nav>
 
 
-        <!-- SIDEBAR FOOTER -->
+        <!-- =================================================
+             SIDEBAR FOOTER
+             ================================================= -->
 
         <div class="admin-sidebar-footer">
 
-            <a href="{{ url_for('admin_logout') }}"
-               class="admin-logout">
 
-                <span>↪</span>
+            <div class="admin-sidebar-company">
 
-                Sign Out
+                <span class="admin-online-dot"></span>
+
+                <span>
+                    System Online
+                </span>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('admin_logout') }}"
+                class="admin-logout"
+            >
+
+                <span class="admin-nav-icon">
+                    ↪
+                </span>
+
+                <span>
+                    Sign Out
+                </span>
 
             </a>
 
@@ -149,37 +258,49 @@
     </aside>
 
 
+
     <!-- =====================================================
-         MAIN AREA
+         MAIN APPLICATION AREA
          ===================================================== -->
 
     <div class="admin-main">
 
 
-        <!-- TOPBAR -->
+        <!-- =================================================
+             TOP BAR
+             ================================================= -->
 
         <header class="admin-topbar">
 
-            <div>
 
-                <strong>
-                    Administration
-                </strong>
+            <div class="admin-topbar-left">
 
-                <span>
-                    Customer Support Management
-                </span>
+                <div class="admin-page-context">
+
+                    <span>
+                        ADMINISTRATION
+                    </span>
+
+                    <strong>
+                        Customer Support Management
+                    </strong>
+
+                </div>
 
             </div>
 
 
+            <!-- ADMIN USER -->
+
             <div class="admin-user">
+
 
                 <div class="admin-avatar">
                     A
                 </div>
 
-                <div>
+
+                <div class="admin-user-details">
 
                     <strong>
                         Administrator
@@ -191,14 +312,21 @@
 
                 </div>
 
+
             </div>
+
 
         </header>
 
 
-        <!-- FLASH -->
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
+        <!-- =================================================
+             FLASH MESSAGES
+             ================================================= -->
+
+        {% with messages = get_flashed_messages(
+            with_categories=true
+        ) %}
 
             {% if messages %}
 
@@ -206,9 +334,14 @@
 
                     {% for category, message in messages %}
 
-                        <div class="flash flash-{{ category }}">
+                        <div
+                            class="admin-flash
+                            admin-flash-{{ category }}"
+                        >
 
-                            {{ message }}
+                            <span>
+                                {{ message }}
+                            </span>
 
                         </div>
 
@@ -221,7 +354,10 @@
         {% endwith %}
 
 
-        <!-- PAGE CONTENT -->
+
+        <!-- =================================================
+             PAGE CONTENT
+             ================================================= -->
 
         <main class="admin-content">
 
@@ -232,13 +368,24 @@
         </main>
 
 
+
+        <!-- =================================================
+             FOOTER
+             ================================================= -->
+
         <footer class="admin-footer">
 
-            {{ company.company_name }}
+            <span>
 
-            &middot;
+                &copy;
+                {{ current_year }}
+                {{ company.company_name }}
 
-            Administration Portal
+            </span>
+
+            <span>
+                Administration Portal
+            </span>
 
         </footer>
 
@@ -249,7 +396,9 @@
 </div>
 
 
+{% block extra_scripts %}{% endblock %}
+
+
 </body>
 
 </html>
-
