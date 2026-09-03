@@ -1,23 +1,204 @@
 {% extends "base.html" %}
-{% block title %}Track a complaint{% endblock %}
+
+{% block title %}
+Track a Complaint
+{% endblock %}
 
 {% block content %}
+
 <section class="form-section wrap">
-    <h1>Track a complaint</h1>
-    <p class="hero-sub">Enter your tracking code and the email you used when reporting the issue.</p>
 
-    <form class="form-card" method="POST">
-        <div class="field">
-            <label for="tracking_code">Tracking code</label>
-            <input type="text" id="tracking_code" name="tracking_code" placeholder="CMP-XXXXXX" required>
+
+<div class="tracking-page">
+
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+
+    <div class="tracking-header">
+
+        <div class="tracking-icon">
+            🔎
         </div>
 
+        <h1>
+            Track Your Complaint
+        </h1>
+
+        <p class="hero-sub">
+            Enter the tracking code you received after
+            submitting your complaint and the email address
+            you used when reporting the issue.
+        </p>
+
+    </div>
+
+
+    <!-- ==================================================
+         TRACKING FORM
+         ================================================== -->
+
+    <form
+        class="form-card tracking-form"
+        method="POST"
+        autocomplete="on"
+    >
+
+        <!-- TRACKING CODE -->
+
         <div class="field">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
+
+            <label for="tracking_code">
+                Tracking Code
+            </label>
+
+            <input
+                type="text"
+                id="tracking_code"
+                name="tracking_code"
+                placeholder="CMP-XXXXXX"
+                maxlength="50"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                required
+            >
+
+            <small class="hint">
+                Enter the tracking code exactly as shown
+                when your complaint was submitted.
+            </small>
+
         </div>
 
-        <button class="btn btn-primary" type="submit">View complaint</button>
+
+        <!-- EMAIL -->
+
+        <div class="field">
+
+            <label for="email">
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+            >
+
+            <small class="hint">
+                Use the same email address you provided
+                when submitting the complaint.
+            </small>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <div class="tracking-submit">
+
+            <button
+                class="btn btn-primary"
+                type="submit"
+                id="trackButton"
+            >
+                View Complaint
+            </button>
+
+        </div>
+
     </form>
+
+
+    <!-- ==================================================
+         HELP
+         ================================================== -->
+
+    <div class="tracking-help-card">
+
+        <div class="tracking-help-icon">
+            ?
+        </div>
+
+        <div>
+
+            <h3>
+                Don't have your tracking code?
+            </h3>
+
+            <p>
+                Your tracking code was provided after your
+                complaint was successfully submitted. Keep
+                it somewhere safe so you can return and check
+                for replies.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 </section>
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const form =
+            document.querySelector(".tracking-form");
+
+        const trackingInput =
+            document.getElementById("tracking_code");
+
+        const trackButton =
+            document.getElementById("trackButton");
+
+
+        // ======================================================
+        // NORMALIZE TRACKING CODE
+        // ======================================================
+
+        trackingInput.addEventListener(
+            "input",
+            function () {
+
+                this.value =
+                    this.value
+                        .trim()
+                        .toUpperCase();
+
+            }
+        );
+
+
+        // ======================================================
+        // PREVENT DOUBLE SUBMISSION
+        // ======================================================
+
+        form.addEventListener(
+            "submit",
+            function () {
+
+                trackButton.disabled =
+                    true;
+
+                trackButton.textContent =
+                    "Checking Complaint...";
+
+            }
+        );
+
+    }
+);
+
+</script>
+
 {% endblock %}
