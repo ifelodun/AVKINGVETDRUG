@@ -6926,3 +6926,612 @@ input[type="file"] {
     }
 
 }
+/* =========================================================
+   COMPLAINT FORM
+   ========================================================= */
+
+.complaint-form {
+    max-width: 850px;
+    margin: 30px auto 70px;
+}
+
+
+/* =========================================================
+   FORM SECTION HEADINGS
+   ========================================================= */
+
+.form-section-heading {
+    margin: 8px 0 24px;
+    padding-bottom: 14px;
+
+    border-bottom: 1px solid #eaecf0;
+}
+
+.form-section-heading h2 {
+    margin: 0 0 6px;
+
+    color: #172033;
+
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.form-section-heading p {
+    margin: 0;
+
+    color: #667085;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.complaint-details-heading {
+    margin-top: 35px;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.complaint-form input,
+.complaint-form textarea {
+    width: 100%;
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #172033;
+
+    font-size: 15px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.complaint-form input {
+    min-height: 48px;
+
+    padding: 12px 14px;
+}
+
+.complaint-form textarea {
+    min-height: 170px;
+
+    padding: 14px;
+
+    resize: vertical;
+
+    line-height: 1.6;
+}
+
+.complaint-form input:focus,
+.complaint-form textarea:focus {
+    outline: none;
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(
+            37,
+            99,
+            235,
+            0.10
+        );
+}
+
+
+/* =========================================================
+   FILE INPUT
+   ========================================================= */
+
+.complaint-form input[type="file"] {
+    padding: 10px;
+
+    cursor: pointer;
+
+    background: #f8fafc;
+}
+
+.complaint-form input[type="file"]::file-selector-button {
+    margin-right: 12px;
+
+    padding: 8px 14px;
+
+    border: 0;
+
+    border-radius: 7px;
+
+    background: #eef2ff;
+
+    color: #344054;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   IMAGE PREVIEW
+   ========================================================= */
+
+.complaint-image-preview {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+    margin-top: 16px;
+}
+
+.complaint-preview-item {
+    position: relative;
+
+    overflow: hidden;
+
+    aspect-ratio: 1 / 1;
+
+    border-radius: 10px;
+
+    border: 1px solid #e4e7ec;
+
+    background: #f8fafc;
+}
+
+.complaint-preview-item img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* =========================================================
+   SUBMIT AREA
+   ========================================================= */
+
+.complaint-submit {
+    margin-top: 30px;
+
+    padding-top: 24px;
+
+    border-top: 1px solid #eaecf0;
+
+    text-align: center;
+}
+
+.complaint-submit .btn {
+    min-width: 210px;
+
+    min-height: 48px;
+
+    font-weight: 700;
+}
+
+.form-security-note {
+    margin: 12px 0 0;
+
+    color: #667085;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .complaint-form {
+        margin-top: 20px;
+    }
+
+    .field-row {
+        grid-template-columns: 1fr;
+    }
+
+    .complaint-image-preview {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .complaint-submit .btn {
+        width: 100%;
+    }
+
+}
+
+/* =========================================================
+   COMPLAINT CONFIRMATION PAGE
+   ========================================================= */
+
+.confirm-section {
+    min-height: calc(100vh - 160px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 60px 20px;
+}
+
+
+/* =========================================================
+   CONFIRMATION CARD
+   ========================================================= */
+
+.confirmation-card {
+    width: 100%;
+    max-width: 650px;
+
+    background: #ffffff;
+
+    border: 1px solid #e7eaf0;
+
+    border-radius: 20px;
+
+    padding: 48px 42px;
+
+    text-align: center;
+
+    box-shadow:
+        0 15px 45px rgba(15, 23, 42, 0.08);
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* Subtle top accent */
+
+.confirmation-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 5px;
+
+    background: linear-gradient(
+        90deg,
+        #16a34a,
+        #22c55e
+    );
+}
+
+
+/* =========================================================
+   SUCCESS ICON
+   ========================================================= */
+
+.confirmation-icon {
+    width: 76px;
+    height: 76px;
+
+    margin: 0 auto 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #ecfdf3;
+
+    border: 8px solid #f0fdf4;
+
+    color: #16a34a;
+
+    font-size: 32px;
+    font-weight: 800;
+
+    line-height: 1;
+
+    box-shadow:
+        0 8px 20px rgba(22, 163, 74, 0.12);
+}
+
+
+/* =========================================================
+   HEADING
+   ========================================================= */
+
+.confirmation-card h1 {
+    margin: 0 0 14px;
+
+    color: #172033;
+
+    font-size: clamp(
+        28px,
+        4vw,
+        38px
+    );
+
+    font-weight: 750;
+
+    line-height: 1.2;
+
+    letter-spacing: -0.5px;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.confirmation-card .hero-sub {
+    max-width: 520px;
+
+    margin: 0 auto 30px;
+
+    color: #667085;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   TRACKING BOX
+   ========================================================= */
+
+.tracking-box {
+    width: 100%;
+
+    margin: 28px auto 32px;
+
+    padding: 24px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+}
+
+
+/* Tracking label */
+
+.tracking-label {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #64748b;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   TRACKING CODE
+   ========================================================= */
+
+.tracking-code {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 240px;
+
+    padding: 14px 22px;
+
+    background: #ffffff;
+
+    border: 2px dashed #cbd5e1;
+
+    border-radius: 10px;
+
+    color: #172033;
+
+    font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+    font-size: 21px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    word-break: break-word;
+
+    box-shadow:
+        0 4px 12px rgba(
+            15,
+            23,
+            42,
+            0.04
+        );
+}
+
+
+/* =========================================================
+   TRACKING HELP TEXT
+   ========================================================= */
+
+.tracking-help {
+    max-width: 450px;
+
+    margin: 14px auto 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
+
+.confirmation-card .hero-actions {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+    margin-top: 10px;
+}
+
+
+/* =========================================================
+   BUTTON IMPROVEMENTS
+   ========================================================= */
+
+.confirmation-card .btn {
+    min-height: 46px;
+
+    padding: 12px 22px;
+
+    border-radius: 10px;
+
+    font-weight: 650;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.confirmation-card .btn:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.confirmation-card .btn-primary {
+    box-shadow:
+        0 7px 18px rgba(
+            37,
+            99,
+            235,
+            0.18
+        );
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+   ========================================================= */
+
+.confirmation-card .btn-secondary {
+    background: #ffffff;
+
+    border: 1px solid #d0d5dd;
+
+    color: #344054;
+}
+
+
+.confirmation-card .btn-secondary:hover {
+    background: #f8fafc;
+
+    border-color: #98a2b3;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+
+    .confirm-section {
+        min-height: auto;
+
+        padding: 40px 16px;
+    }
+
+
+    .confirmation-card {
+        padding: 38px 22px;
+
+        border-radius: 16px;
+    }
+
+
+    .confirmation-icon {
+        width: 68px;
+        height: 68px;
+
+        font-size: 28px;
+    }
+
+
+    .confirmation-card h1 {
+        font-size: 28px;
+    }
+
+
+    .confirmation-card .hero-sub {
+        font-size: 15px;
+    }
+
+
+    .tracking-box {
+        padding: 20px 14px;
+    }
+
+
+    .tracking-code {
+        min-width: 0;
+
+        width: 100%;
+
+        font-size: 17px;
+
+        letter-spacing: 1.5px;
+
+        padding: 13px 12px;
+    }
+
+
+    .confirmation-card .hero-actions {
+        flex-direction: column;
+
+        width: 100%;
+    }
+
+
+    .confirmation-card .hero-actions .btn {
+        width: 100%;
+    }
+
+}
