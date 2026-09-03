@@ -2,5 +2,10 @@ Flask
 psycopg2-binary
 python-dotenv
 Werkzeug
-boto3
 gunicorn
+Flask-Mail
+pandas
+openpyxl
+reportlab
+requests
+cloudinary
