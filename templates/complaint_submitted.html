@@ -1,16 +1,85 @@
 {% extends "base.html" %}
-{% block title %}Complaint sent{% endblock %}
+
+{% block title %}
+Complaint Sent
+{% endblock %}
 
 {% block content %}
-<section class="confirm-section wrap">
-    <h1>Got it. We're on it.</h1>
-    <p class="hero-sub">Save this tracking code — you'll need it to check for replies.</p>
 
-    <div class="tracking-code">{{ tracking_code }}</div>
+<section class="confirm-section wrap">
+
+```
+<div class="confirmation-card">
+
+    <!-- Success Icon -->
+
+   <div
+    class="confirmation-icon"
+    aria-label="Success"
+>
+    ✓
+</div>
+
+    <!-- Heading -->
+
+    <h1>
+        Complaint Received
+    </h1>
+
+
+    <p class="hero-sub">
+        Thank you for contacting us. Your complaint has been
+        successfully submitted and will be reviewed by our team.
+    </p>
+
+
+    <!-- Tracking Information -->
+
+    <div class="tracking-box">
+
+        <span class="tracking-label">
+            Your Tracking Code
+        </span>
+
+        <div class="tracking-code">
+            {{ tracking_code }}
+        </div>
+
+        <p class="tracking-help">
+            Please save this code. You will need it to check
+            the status of your complaint and view replies.
+        </p>
+
+    </div>
+
+
+    <!-- Actions -->
 
     <div class="hero-actions">
-        <a class="btn btn-primary" href="{{ url_for('view_complaint', tracking_code=tracking_code) }}">View your complaint</a>
-        <a class="btn btn-secondary" href="{{ url_for('home') }}">Back home</a>
+
+        <a
+            class="btn btn-primary"
+            href="{{ url_for(
+                'view_complaint',
+                tracking_code=tracking_code
+            ) }}"
+        >
+            View My Complaint
+        </a>
+
+
+        <a
+            class="btn btn-secondary"
+            href="{{ url_for('home') }}"
+        >
+            Back to Home
+        </a>
+
     </div>
+
+</div>
+```
+
 </section>
+
 {% endblock %}
