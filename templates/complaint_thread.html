@@ -1,65 +1,660 @@
 {% extends "base.html" %}
-{% block title %}{{ complaint.subject }}{% endblock %}
+
+{% block title %}
+    {{ complaint.subject }} | Complaint
+{% endblock %}
 
 {% block content %}
+
 <section class="thread-section wrap">
 
+    <!-- =====================================================
+         THREAD HEADER
+         ===================================================== -->
     <div class="thread-header">
-        {% if is_admin_view %}
-        <a href="{{ url_for('admin_dashboard') }}">&larr; Back to dashboard</a>
-        {% endif %}
-
-        <div class="thread-code">{{ complaint.tracking_code }}</div>
-        <h1>{{ complaint.subject }}</h1>
-        <p class="complaint-meta">
-            {{ complaint.name }} &middot; {{ complaint.email }}
-            {% if complaint.phone %} &middot; {{ complaint.phone }}{% endif %}
-        </p>
-        <span class="status-badge status-{{ complaint.status }}">{{ complaint.status.replace('_', ' ') }}</span>
 
         {% if is_admin_view %}
-        <form class="status-controls" method="POST">
-            <input type="hidden" name="action" value="set_status">
-            <select name="status" onchange="this.form.submit()">
-                <option value="open" {% if complaint.status == 'open' %}selected{% endif %}>Open</option>
-                <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>In progress</option>
-                <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Resolved</option>
-            </select>
-        </form>
+        <a class="back-link" href="{{ url_for('admin_dashboard') }}">
+            &larr; Back to dashboard
+        </a>
+        {% else %}
+        <a class="back-link" href="{{ url_for('home') }}">
+            &larr; Back to home
+        </a>
         {% endif %}
-    </div>
 
-    {% for msg in messages %}
-    <div class="message {% if msg.sender_type == 'admin' %}message-from-admin{% endif %}">
-        <div class="message-head">
-            <span class="message-sender {% if msg.sender_type == 'admin' %}sender-admin{% else %}sender-customer{% endif %}">
-                {% if msg.sender_type == 'admin' %}Support team{% else %}{{ complaint.name }}{% endif %}
+        <div class="thread-header-main">
+
+            <div class="thread-icon">
+                💬
+            </div>
+
+            <div class="thread-heading">
+
+                <div class="thread-code">
+                    {{ complaint.tracking_code }}
+                </div>
+
+                <h1>
+                    {{ complaint.subject }}
+                </h1>
+
+                <p class="complaint-meta">
+                    <strong>{{ complaint.name }}</strong>
+                    <span>&middot;</span>
+                    {{ complaint.email }}
+
+                    {% if complaint.phone %}
+                    <span>&middot;</span>
+                    {{ complaint.phone }}
+                    {% endif %}
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="thread-header-bottom">
+
+            <span class="status-badge status-{{ complaint.status }}">
+                {{ complaint.status.replace('_', ' ')|title }}
             </span>
-            <span class="message-time">{{ msg.created_at.strftime('%d %b %Y, %H:%M') }}</span>
-        </div>
-        <p class="message-body">{{ msg.message }}</p>
-        {% if msg.image_urls %}
-        <div class="message-images">
-            {% for img in msg.image_urls %}
-            <img src="{{ img }}" alt="">
-            {% endfor %}
-        </div>
-        {% endif %}
-    </div>
-    {% endfor %}
 
-    <form class="reply-form" method="POST" enctype="multipart/form-data">
-        {% if is_admin_view %}<input type="hidden" name="action" value="reply">{% endif %}
-        <div class="field">
-            <label for="message">{% if is_admin_view %}Reply to customer{% else %}Add a message{% endif %}</label>
-            <textarea id="message" name="message" required></textarea>
+            {% if is_admin_view %}
+
+            <form class="status-controls" method="POST">
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="set_status"
+                >
+
+                <label for="complaint-status">
+                    Update status
+                </label>
+
+                <select
+                    id="complaint-status"
+                    name="status"
+                    onchange="this.form.submit()"
+                >
+
+                    <option
+                        value="open"
+                        {% if complaint.status == 'open' %}selected{% endif %}
+                    >
+                        Open
+                    </option>
+
+                    <option
+                        value="in_progress"
+                        {% if complaint.status == 'in_progress' %}selected{% endif %}
+                    >
+                        In Progress
+                    </option>
+
+                    <option
+                        value="resolved"
+                        {% if complaint.status == 'resolved' %}selected{% endif %}
+                    >
+                        Resolved
+                    </option>
+
+                </select>
+
+            </form>
+
+            {% endif %}
+
         </div>
-        <div class="field">
-            <label for="images">Photos <span class="hint">(optional, up to 4)</span></label>
-            <input type="file" id="images" name="images" accept="image/*" multiple>
+
+    </div>
+
+
+    <!-- =====================================================
+         CONVERSATION
+         ===================================================== -->
+
+    <div class="conversation">
+
+        <div class="conversation-title">
+            <div>
+                <h2>Conversation</h2>
+                <p>
+                    Messages related to this complaint
+                </p>
+            </div>
+
+            <div class="message-count">
+                {{ messages|length }}
+                {% if messages|length == 1 %}
+                    message
+                {% else %}
+                    messages
+                {% endif %}
+            </div>
         </div>
-        <button class="btn btn-primary" type="submit">Send</button>
-    </form>
+
+
+        {% if messages %}
+
+            <div class="message-list">
+
+                {% for msg in messages %}
+
+                <article
+                    class="message
+                    {% if msg.sender_type == 'admin' %}
+                        message-from-admin
+                    {% else %}
+                        message-from-customer
+                    {% endif %}"
+                >
+
+                    <div class="message-head">
+
+                        <div class="message-author">
+
+                            <div class="sender-avatar
+                                {% if msg.sender_type == 'admin' %}
+                                    admin-avatar
+                                {% else %}
+                                    customer-avatar
+                                {% endif %}
+                            ">
+
+                                {% if msg.sender_type == 'admin' %}
+                                    S
+                                {% else %}
+                                    {{ complaint.name[:1]|upper }}
+                                {% endif %}
+
+                            </div>
+
+                            <div>
+
+                                <span class="message-sender
+                                    {% if msg.sender_type == 'admin' %}
+                                        sender-admin
+                                    {% else %}
+                                        sender-customer
+                                    {% endif %}
+                                ">
+
+                                    {% if msg.sender_type == 'admin' %}
+                                        Support Team
+                                    {% else %}
+                                        {{ complaint.name }}
+                                    {% endif %}
+
+                                </span>
+
+                                <span class="message-role">
+
+                                    {% if msg.sender_type == 'admin' %}
+                                        Customer Support
+                                    {% else %}
+                                        Customer
+                                    {% endif %}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <time class="message-time">
+
+                            {{ msg.created_at.strftime('%d %b %Y, %H:%M') }}
+
+                        </time>
+
+                    </div>
+
+
+                    <div class="message-content">
+
+                        <p class="message-body">
+                            {{ msg.message }}
+                        </p>
+
+
+                        {% if msg.image_urls %}
+
+                        <div class="message-attachments">
+
+                            <div class="attachment-heading">
+                                <span>📎</span>
+                                Attachments
+                            </div>
+
+                            <div class="message-images">
+
+                                {% for img in msg.image_urls %}
+
+                                <a
+                                    href="{{ img }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="message-image-link"
+                                >
+
+                                    <img
+                                        src="{{ img }}"
+                                        alt="Complaint attachment"
+                                        loading="lazy"
+                                    >
+
+                                </a>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-conversation">
+
+                <div class="empty-icon">
+                    💬
+                </div>
+
+                <h3>No messages yet</h3>
+
+                <p>
+                    Send a message below to continue this conversation.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         REPLY FORM
+         ===================================================== -->
+
+    <div class="reply-card">
+
+        <div class="reply-header">
+
+            <div class="reply-icon">
+                ✉
+            </div>
+
+            <div>
+
+                <h2>
+                    {% if is_admin_view %}
+                        Reply to Customer
+                    {% else %}
+                        Add a Message
+                    {% endif %}
+                </h2>
+
+                <p>
+                    {% if is_admin_view %}
+                        Send a response directly to the customer.
+                    {% else %}
+                        Add more information to your complaint.
+                    {% endif %}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form
+            class="reply-form"
+            method="POST"
+            enctype="multipart/form-data"
+            id="replyForm"
+        >
+
+            {% if is_admin_view %}
+
+            <input
+                type="hidden"
+                name="action"
+                value="reply"
+            >
+
+            {% endif %}
+
+
+            <div class="field">
+
+                <label for="message">
+                    {% if is_admin_view %}
+                        Your Response
+                    {% else %}
+                        Your Message
+                    {% endif %}
+                </label>
+
+                <textarea
+                    id="message"
+                    name="message"
+                    rows="6"
+                    maxlength="5000"
+                    placeholder="{% if is_admin_view %}Type your response to the customer...{% else %}Add any additional information about your complaint...{% endif %}"
+                    required
+                ></textarea>
+
+                <div class="field-footer">
+
+                    <span>
+                        Please provide clear and relevant information.
+                    </span>
+
+                    <span id="characterCount">
+                        0 / 5000
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 IMAGE UPLOAD
+                 ================================================= -->
+
+            <div class="field">
+
+                <label for="images">
+                    Supporting Photos
+                    <span class="optional-label">
+                        Optional
+                    </span>
+                </label>
+
+                <div class="upload-box">
+
+                    <input
+                        type="file"
+                        id="images"
+                        name="images"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                    >
+
+                    <label
+                        for="images"
+                        class="upload-label"
+                    >
+
+                        <span class="upload-icon">
+                            📷
+                        </span>
+
+                        <span class="upload-title">
+                            Add photos
+                        </span>
+
+                        <span class="upload-description">
+                            JPG, PNG or WEBP · Maximum 4 photos · 2 MB each
+                        </span>
+
+                    </label>
+
+                </div>
+
+                <div
+                    id="imagePreview"
+                    class="image-preview"
+                ></div>
+
+                <div
+                    id="uploadError"
+                    class="upload-error"
+                    style="display:none;"
+                ></div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SUBMIT
+                 ================================================= -->
+
+            <div class="reply-actions">
+
+                <button
+                    class="btn btn-primary reply-submit"
+                    type="submit"
+                    id="replySubmit"
+                >
+
+                    <span class="submit-icon">
+                        ➤
+                    </span>
+
+                    <span id="submitText">
+                        Send Message
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </section>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("replyForm");
+    const message = document.getElementById("message");
+    const images = document.getElementById("images");
+    const preview = document.getElementById("imagePreview");
+    const uploadError = document.getElementById("uploadError");
+    const submitButton = document.getElementById("replySubmit");
+    const submitText = document.getElementById("submitText");
+    const characterCount = document.getElementById("characterCount");
+
+    const MAX_FILES = 4;
+    const MAX_SIZE = 2 * 1024 * 1024;
+
+    const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+
+    /* =====================================================
+       CHARACTER COUNTER
+       ===================================================== */
+
+    function updateCharacterCount() {
+
+        const length = message.value.length;
+
+        characterCount.textContent =
+            length + " / 5000";
+
+    }
+
+    message.addEventListener(
+        "input",
+        updateCharacterCount
+    );
+
+    updateCharacterCount();
+
+
+    /* =====================================================
+       IMAGE PREVIEW
+       ===================================================== */
+
+    images.addEventListener("change", function () {
+
+        preview.innerHTML = "";
+        uploadError.style.display = "none";
+        uploadError.textContent = "";
+
+        const files = Array.from(images.files);
+
+        if (files.length > MAX_FILES) {
+
+            uploadError.textContent =
+                "You can upload a maximum of 4 photos.";
+
+            uploadError.style.display = "block";
+
+            images.value = "";
+
+            return;
+        }
+
+
+        for (const file of files) {
+
+            if (!ALLOWED_TYPES.includes(file.type)) {
+
+                uploadError.textContent =
+                    "Only JPG, PNG and WEBP images are allowed.";
+
+                uploadError.style.display = "block";
+
+                images.value = "";
+                preview.innerHTML = "";
+
+                return;
+            }
+
+
+            if (file.size > MAX_SIZE) {
+
+                uploadError.textContent =
+                    `"${file.name}" is larger than 2 MB.`;
+
+                uploadError.style.display = "block";
+
+                images.value = "";
+                preview.innerHTML = "";
+
+                return;
+            }
+
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+
+                const item =
+                    document.createElement("div");
+
+                item.className =
+                    "preview-item";
+
+                item.innerHTML = `
+                    <img
+                        src="${event.target.result}"
+                        alt="Selected image"
+                    >
+                    <span>${file.name}</span>
+                `;
+
+                preview.appendChild(item);
+
+            };
+
+            reader.readAsDataURL(file);
+
+        }
+
+    });
+
+
+    /* =====================================================
+       FORM SUBMISSION
+       ===================================================== */
+
+    form.addEventListener("submit", function (event) {
+
+        const files =
+            Array.from(images.files);
+
+        if (files.length > MAX_FILES) {
+
+            event.preventDefault();
+
+            uploadError.textContent =
+                "You can upload a maximum of 4 photos.";
+
+            uploadError.style.display = "block";
+
+            return;
+        }
+
+
+        for (const file of files) {
+
+            if (!ALLOWED_TYPES.includes(file.type)) {
+
+                event.preventDefault();
+
+                uploadError.textContent =
+                    "Only JPG, PNG and WEBP images are allowed.";
+
+                uploadError.style.display = "block";
+
+                return;
+            }
+
+
+            if (file.size > MAX_SIZE) {
+
+                event.preventDefault();
+
+                uploadError.textContent =
+                    `"${file.name}" is larger than 2 MB.`;
+
+                uploadError.style.display = "block";
+
+                return;
+            }
+
+        }
+
+
+        submitButton.disabled = true;
+
+        submitText.textContent =
+            "Sending...";
+
+    });
+
+});
+
+</script>
+
 {% endblock %}
