@@ -7535,3 +7535,335 @@ input[type="file"] {
     }
 
 }
+/* =========================================================
+   TRACK COMPLAINT PAGE
+   ========================================================= */
+
+.tracking-page {
+    width: 100%;
+    max-width: 700px;
+
+    margin: 0 auto;
+
+    padding: 35px 0 70px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.tracking-header {
+    text-align: center;
+
+    margin-bottom: 28px;
+}
+
+.tracking-icon {
+    width: 68px;
+    height: 68px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eff6ff;
+
+    border: 7px solid #f8fafc;
+
+    color: #2563eb;
+
+    font-size: 27px;
+
+    box-shadow:
+        0 7px 20px rgba(
+            37,
+            99,
+            235,
+            0.10
+        );
+}
+
+.tracking-header h1 {
+    margin: 0 0 12px;
+
+    color: #172033;
+
+    font-size: clamp(
+        28px,
+        4vw,
+        38px
+    );
+
+    font-weight: 750;
+
+    letter-spacing: -0.5px;
+}
+
+.tracking-header .hero-sub {
+    max-width: 570px;
+
+    margin: 0 auto;
+
+    color: #667085;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.tracking-form {
+    width: 100%;
+
+    padding: 34px;
+
+    background: #ffffff;
+
+    border: 1px solid #e4e7ec;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 12px 35px rgba(
+            15,
+            23,
+            42,
+            0.07
+        );
+}
+
+
+/* =========================================================
+   FORM FIELDS
+   ========================================================= */
+
+.tracking-form .field {
+    margin-bottom: 24px;
+}
+
+.tracking-form .field:last-of-type {
+    margin-bottom: 0;
+}
+
+.tracking-form label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #344054;
+
+    font-size: 14px;
+
+    font-weight: 650;
+}
+
+.tracking-form input {
+    width: 100%;
+
+    min-height: 50px;
+
+    padding: 13px 15px;
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #172033;
+
+    font-size: 15px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.tracking-form input:focus {
+    outline: none;
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(
+            37,
+            99,
+            235,
+            0.10
+        );
+}
+
+
+/* =========================================================
+   TRACKING CODE FIELD
+   ========================================================= */
+
+#tracking_code {
+    font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   HELP TEXT
+   ========================================================= */
+
+.tracking-form .hint {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #667085;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   SUBMIT
+   ========================================================= */
+
+.tracking-submit {
+    margin-top: 28px;
+
+    padding-top: 24px;
+
+    border-top: 1px solid #eaecf0;
+
+    text-align: center;
+}
+
+.tracking-submit .btn {
+    width: 100%;
+
+    min-height: 49px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   HELP CARD
+   ========================================================= */
+
+.tracking-help-card {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 14px;
+
+    margin-top: 20px;
+
+    padding: 20px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e4e7ec;
+
+    border-radius: 13px;
+}
+
+.tracking-help-icon {
+    flex: 0 0 32px;
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e0e7ff;
+
+    color: #3730a3;
+
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+.tracking-help-card h3 {
+    margin: 2px 0 6px;
+
+    color: #344054;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+.tracking-help-card p {
+    margin: 0;
+
+    color: #667085;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+
+    .tracking-page {
+        padding:
+            25px 0 50px;
+    }
+
+    .tracking-header {
+        margin-bottom: 22px;
+    }
+
+    .tracking-icon {
+        width: 60px;
+        height: 60px;
+
+        font-size: 24px;
+    }
+
+    .tracking-header h1 {
+        font-size: 28px;
+    }
+
+    .tracking-header .hero-sub {
+        font-size: 14px;
+    }
+
+    .tracking-form {
+        padding: 24px 20px;
+
+        border-radius: 14px;
+    }
+
+    .tracking-help-card {
+        padding: 16px;
+    }
+
+}
