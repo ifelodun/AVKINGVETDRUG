@@ -1,28 +1,222 @@
 {% extends "base.html" %}
-{% block title %}Updates{% endblock %}
+
+{% block title %}
+    Updates | {{ company.company_name }}
+{% endblock %}
+
 
 {% block content %}
-<section class="updates-section wrap">
-    <h1>Updates</h1>
-    <p class="hero-sub">News, fixes, and announcements from the team.</p>
 
-    {% if not updates %}
-    <div class="empty-state">Nothing posted yet. Check back soon.</div>
-    {% endif %}
+<section class="updates-page">
 
-    {% for update in updates %}
-    <article class="update-post">
-        <div class="update-date">{{ update.created_at.strftime('%d %b %Y') }}</div>
-        <h3>{{ update.title }}</h3>
-        <p class="update-body">{{ update.body }}</p>
-        {% if update.image_urls %}
-        <div class="update-images">
-            {% for img in update.image_urls %}
-            <img src="{{ img }}" alt="">
-            {% endfor %}
+
+    <!-- =====================================================
+         PAGE HERO
+         ===================================================== -->
+
+    <div class="updates-hero">
+
+        <div class="updates-hero-content">
+
+            <span class="updates-eyebrow">
+                {{ company.company_name }}
+            </span>
+
+            <h1>
+                Latest Updates
+            </h1>
+
+            <p>
+                Stay informed with the latest news, announcements,
+                service updates and important information from our team.
+            </p>
+
         </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         UPDATES CONTENT
+         ===================================================== -->
+
+    <div class="updates-container">
+
+
+        {% if not updates %}
+
+        <!-- EMPTY STATE -->
+
+        <div class="updates-empty">
+
+            <div class="updates-empty-icon">
+                ✓
+            </div>
+
+            <h2>
+                No updates yet
+            </h2>
+
+            <p>
+                There are no announcements available at the moment.
+                Please check back soon for new updates.
+            </p>
+
+            <a
+                href="{{ url_for('index') }}"
+                class="updates-back-button"
+            >
+                ← Back to Home
+            </a>
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- =================================================
+             SECTION HEADER
+             ================================================= -->
+
+        <div class="updates-section-header">
+
+            <div>
+
+                <span>
+                    INFORMATION CENTRE
+                </span>
+
+                <h2>
+                    News & Announcements
+                </h2>
+
+            </div>
+
+            <div class="updates-count">
+
+                {{ updates|length }}
+                update{% if updates|length != 1 %}s{% endif %}
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             UPDATE GRID
+             ================================================= -->
+
+        <div class="updates-grid">
+
+            {% for update in updates %}
+
+            <article class="professional-update-card">
+
+
+                <!-- IMAGE -->
+
+                {% if update.image_urls %}
+
+                <div class="update-card-image">
+
+                    <img
+                        src="{{ update.image_urls[0] }}"
+                        alt="{{ update.title }}"
+                        loading="lazy"
+                    >
+
+                    <div class="update-image-label">
+                        {{ company.company_name }}
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+
+
+                <!-- CONTENT -->
+
+                <div class="update-card-content">
+
+
+                    <div class="update-card-meta">
+
+                        <span class="update-card-date">
+
+                            <span class="calendar-icon">
+                                ▣
+                            </span>
+
+                            {{ update.created_at.strftime('%d %b %Y') }}
+
+                        </span>
+
+                        <span class="update-card-label">
+                            UPDATE
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+                        {{ update.title }}
+                    </h3>
+
+
+                    <p class="update-card-body">
+                        {{ update.body }}
+                    </p>
+
+
+
+                    <!-- ADDITIONAL IMAGES -->
+
+                    {% if update.image_urls and update.image_urls|length > 1 %}
+
+                    <div class="update-image-gallery">
+
+                        {% for img in update.image_urls[1:] %}
+
+                        <a
+                            href="{{ img }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="update-gallery-item"
+                        >
+
+                            <img
+                                src="{{ img }}"
+                                alt="{{ update.title }}"
+                                loading="lazy"
+                            >
+
+                        </a>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% endif %}
+
+
+                </div>
+
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
         {% endif %}
-    </article>
-    {% endfor %}
+
+
+    </div>
+
 </section>
+
 {% endblock %}
