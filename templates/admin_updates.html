@@ -1,569 +1,1177 @@
 {% extends "admin_base.html" %}
 
-{% block title %}
-Manage Updates
-{% endblock %}
-
+{% block title %}Manage Updates{% endblock %}
 
 {% block content %}
 
-<section class="form-section wrap">
-
-    <!-- ======================================================
-         PAGE HEADER
-         ====================================================== -->
-
-    <div class="dash-header">
-
-        <div>
-
-            <h1>
-                Post an Update
-            </h1>
-
-            <p class="page-subtitle">
-                Publish announcements, news and important
-                information for applicants and staff.
-            </p>
-
-        </div>
-
-
-        <a
-            class="btn btn-secondary btn-small"
-            href="{{ url_for('admin_dashboard') }}"
-        >
-            &larr; Dashboard
-        </a>
-
-    </div>
-
-
-    <!-- ======================================================
-         UPDATE FORM
-         ====================================================== -->
-
-    <form
-        class="form-card"
-        method="POST"
-        enctype="multipart/form-data"
-        id="updateForm"
-    >
-
-        <!-- ==================================================
-             TITLE
-             ================================================== -->
-
-        <div class="field">
-
-            <label for="title">
-                Update Title
-            </label>
-
-            <input
-                type="text"
-                id="title"
-                name="title"
-                maxlength="200"
-                placeholder="Enter update title"
-                autocomplete="off"
-                required
-            >
-
-        </div>
-
-
-        <!-- ==================================================
-             BODY
-             ================================================== -->
-
-        <div class="field">
-
-            <label for="body">
-                Details
-            </label>
-
-            <textarea
-                id="body"
-                name="body"
-                rows="7"
-                maxlength="5000"
-                placeholder="Write the details of your update..."
-                required
-            ></textarea>
-
-        </div>
-
-
-        <!-- ==================================================
-             IMAGES
-             ================================================== -->
-
-        <div class="field">
-
-            <label for="images">
-
-                Photos
-
-                <span class="hint">
-                    (optional — maximum 4 images, 2 MB each)
-                </span>
-
-            </label>
-
-
-            <input
-                type="file"
-                id="images"
-                name="images"
-                accept="image/jpeg,image/png,image/webp"
-                multiple
-            >
-
-
-            <small
-                id="imageStatus"
-                class="hint"
-            >
-                JPG, JPEG, PNG or WEBP only.
-                Maximum 4 images.
-            </small>
-
-
-            <!-- Image preview -->
-
-            <div
-                id="imagePreview"
-                class="update-image-preview"
-                style="display:none;"
-            ></div>
-
-        </div>
-
-
-        <!-- ==================================================
-             SUBMIT
-             ================================================== -->
-
-        <button
-            class="btn btn-primary"
-            type="submit"
-            id="submitBtn"
-        >
-            Post Update
-        </button>
-
-    </form>
-
-</section>
-
-
-
-<!-- ==========================================================
-     POSTED UPDATES
-     ========================================================== -->
-
-<section class="updates-section wrap">
-
-    <div class="section-header">
-
-        <div>
-
-            <h2>
-                Posted Updates
-            </h2>
-
-            <p class="page-subtitle">
-                Previously published announcements.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    {% if not updates %}
-
-        <!-- ==================================================
-             EMPTY STATE
-             ================================================== -->
-
-        <div class="empty-state">
-
-            <strong>
-                Nothing posted yet.
-            </strong>
-
-            <p>
-                Your published updates will appear here.
-            </p>
-
-        </div>
-
-
-    {% else %}
-
-
-        <!-- ==================================================
-             UPDATE LIST
-             ================================================== -->
-
-        {% for update in updates %}
-
-        <article class="update-post">
-
-
-            <!-- DATE -->
-
-            <div class="update-date">
-
-                {{ update.created_at.strftime('%d %b %Y') }}
-
+<style>
+:root {
+    --update-green: #087443;
+    --update-green-dark: #064e32;
+    --update-green-light: #eaf6ef;
+    --update-bg: #f4f7f5;
+    --update-text: #172b22;
+    --update-muted: #718078;
+    --update-border: #e1e9e3;
+    --update-danger: #c62828;
+}
+
+.updates-page {
+    max-width: 1450px;
+    margin: 0 auto;
+    padding: 24px;
+    color: var(--update-text);
+}
+
+.updates-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 32px;
+    margin-bottom: 26px;
+    color: #fff;
+    background: linear-gradient(120deg, #064e32 0%, #087443 58%, #14965c 100%);
+    border-radius: 22px;
+    box-shadow: 0 12px 32px rgba(6, 78, 50, .16);
+}
+
+.updates-hero::after {
+    content: "";
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    right: -65px;
+    top: -100px;
+    border: 35px solid rgba(255,255,255,.08);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.updates-hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.updates-hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(25px, 3vw, 34px);
+    font-weight: 800;
+    letter-spacing: -.7px;
+}
+
+.updates-hero p {
+    margin: 0;
+    max-width: 650px;
+    color: rgba(255,255,255,.85);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.updates-hero-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 78px;
+    height: 78px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 22px;
+    background: rgba(255,255,255,.13);
+    font-size: 35px;
+}
+
+.updates-back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 17px;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 11px;
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: .2s ease;
+}
+
+.updates-back-btn:hover {
+    background: #fff;
+    color: var(--update-green-dark);
+}
+
+.updates-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 25px;
+}
+
+.updates-panel {
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--update-border);
+    border-radius: 18px;
+    box-shadow: 0 5px 22px rgba(23, 43, 34, .045);
+}
+
+.updates-panel-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 23px 25px;
+    border-bottom: 1px solid var(--update-border);
+}
+
+.updates-panel-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    border-radius: 13px;
+    background: var(--update-green-light);
+    color: var(--update-green);
+    font-size: 22px;
+}
+
+.updates-panel-header h2 {
+    margin: 1px 0 6px;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--update-text);
+}
+
+.updates-panel-header p {
+    margin: 0;
+    color: var(--update-muted);
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.updates-panel-body {
+    padding: 25px;
+}
+
+.update-field {
+    margin-bottom: 23px;
+}
+
+.update-field label {
+    display: block;
+    margin-bottom: 9px;
+    color: #263b30;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.update-required {
+    color: #d32f2f;
+}
+
+.update-optional {
+    color: var(--update-muted);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.update-input,
+.update-textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 15px;
+    border: 1px solid #dce6de;
+    border-radius: 11px;
+    outline: none;
+    background: #fbfdfb;
+    color: var(--update-text);
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.update-input {
+    min-height: 48px;
+}
+
+.update-textarea {
+    min-height: 180px;
+    line-height: 1.8;
+    resize: vertical;
+}
+
+.update-input:focus,
+.update-textarea:focus {
+    border-color: var(--update-green);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(8,116,67,.09);
+}
+
+.update-input::placeholder,
+.update-textarea::placeholder {
+    color: #9aa79e;
+}
+
+.update-field-help {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+    color: var(--update-muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.update-counter {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.update-upload-box {
+    padding: 22px;
+    border: 1.5px dashed #b9d4c1;
+    border-radius: 14px;
+    background: #f8fcf9;
+    text-align: center;
+    transition: .2s ease;
+}
+
+.update-upload-box:hover,
+.update-upload-box.drag-active {
+    border-color: var(--update-green);
+    background: #eff8f2;
+}
+
+.update-upload-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 12px;
+    border-radius: 16px;
+    background: #e5f3e9;
+    font-size: 25px;
+}
+
+.update-upload-box h3 {
+    margin: 0 0 7px;
+    color: var(--update-text);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.update-upload-box p {
+    margin: 0 0 15px;
+    color: var(--update-muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.update-file-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border: 1px solid #b7d7c2;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--update-green);
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.update-file-label:hover {
+    border-color: var(--update-green);
+    background: var(--update-green-light);
+}
+
+.update-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+.update-file-input:focus-visible + .update-file-label {
+    outline: 3px solid rgba(8,116,67,.25);
+    outline-offset: 3px;
+}
+
+.update-image-status {
+    margin-top: 13px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--update-muted);
+}
+
+.update-image-status.error {
+    color: var(--update-danger);
+    font-weight: 700;
+}
+
+.update-image-status.success {
+    color: var(--update-green);
+    font-weight: 700;
+}
+
+.update-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+    text-align: left;
+}
+
+.update-preview-item {
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    border: 1px solid var(--update-border);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.update-preview-item img {
+    display: block;
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    background: #edf2ee;
+}
+
+.update-preview-name {
+    overflow: hidden;
+    padding: 8px;
+    color: #506157;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.update-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding-top: 21px;
+    margin-top: 5px;
+    border-top: 1px solid var(--update-border);
+}
+
+.update-footer-note {
+    color: var(--update-muted);
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.update-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 47px;
+    padding: 13px 22px;
+    border: 0;
+    border-radius: 11px;
+    background: linear-gradient(120deg, #087443, #099455);
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 5px 13px rgba(8,116,67,.18);
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+}
+
+.update-submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(8,116,67,.25);
+}
+
+.update-submit-btn:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.updates-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.updates-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    min-height: 30px;
+    padding: 0 10px;
+    border-radius: 9px;
+    background: var(--update-green-light);
+    color: var(--update-green);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.updates-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 19px;
+    padding: 24px;
+}
+
+.update-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--update-border);
+    border-radius: 15px;
+    background: #fff;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.update-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(23,43,34,.08);
+}
+
+.update-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 15px 17px 0;
+}
+
+.update-published-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border-radius: 7px;
+    background: var(--update-green-light);
+    color: var(--update-green);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.update-date {
+    color: var(--update-muted);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.update-card-content {
+    padding: 16px 17px 18px;
+}
+
+.update-card-content h3 {
+    margin: 0 0 11px;
+    color: var(--update-text);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.update-card-body {
+    color: #64736a;
+    font-size: 13px;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.update-card-images {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 0 17px 17px;
+}
+
+.update-card-images img {
+    display: block;
+    width: 100%;
+    height: 145px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--update-border);
+    background: #f4f7f5;
+    cursor: zoom-in;
+}
+
+.update-card-images img:only-child {
+    grid-column: 1 / -1;
+    height: 230px;
+}
+
+.updates-empty {
+    padding: 55px 22px;
+    text-align: center;
+}
+
+.updates-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 18px;
+    border-radius: 23px;
+    background: var(--update-green-light);
+    font-size: 34px;
+}
+
+.updates-empty h3 {
+    margin: 0 0 9px;
+    color: var(--update-text);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.updates-empty p {
+    max-width: 390px;
+    margin: 0 auto;
+    color: var(--update-muted);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.update-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(9, 22, 15, .88);
+}
+
+.update-lightbox.open {
+    display: flex;
+}
+
+.update-lightbox img {
+    display: block;
+    max-width: min(100%, 1100px);
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 15px 50px rgba(0,0,0,.3);
+}
+
+.update-lightbox-close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 43px;
+    height: 43px;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+@media (min-width: 1050px) {
+    .updates-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .updates-page {
+        padding: 13px;
+    }
+
+    .updates-hero {
+        padding: 23px 20px;
+        border-radius: 17px;
+    }
+
+    .updates-hero-icon {
+        width: 57px;
+        height: 57px;
+        border-radius: 16px;
+        font-size: 27px;
+    }
+
+    .updates-panel-header {
+        padding: 19px;
+    }
+
+    .updates-panel-body {
+        padding: 19px;
+    }
+
+    .updates-list {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .update-form-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .update-submit-btn {
+        width: 100%;
+    }
+
+    .update-card-images img {
+        height: 120px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .update-card,
+    .update-submit-btn,
+    .updates-back-btn {
+        transition: none;
+    }
+}
+</style>
+
+<div class="updates-page">
+
+    <!-- Page Header -->
+    <section class="updates-hero">
+        <div class="updates-hero-content">
+            <div>
+                <h1>Manage Updates</h1>
+                <p>
+                    Publish announcements, important notices, news and updates
+                    for applicants and staff from one central dashboard.
+                </p>
             </div>
 
+            <div style="display:flex;align-items:center;gap:15px;flex-wrap:wrap;">
+                <div class="updates-hero-icon" aria-hidden="true">📢</div>
 
-            <!-- TITLE -->
-
-            <h3>
-
-                {{ update.title }}
-
-            </h3>
-
-
-            <!-- BODY -->
-
-            <p class="update-body">
-
-                {{ update.body }}
-
-            </p>
-
-
-            <!-- ==================================================
-                 UPDATE IMAGES
-                 ================================================== -->
-
-            {% if update.image_urls %}
-
-            <div class="update-images">
-
-                {% for img in update.image_urls %}
-
-                    <img
-                        src="{{ img }}"
-                        alt="{{ update.title }}"
-                        loading="lazy"
-                    >
-
-                {% endfor %}
-
+                <a href="{{ url_for('admin_dashboard') }}"
+                   class="updates-back-btn">
+                    <span aria-hidden="true">←</span>
+                    Back to Dashboard
+                </a>
             </div>
+        </div>
+    </section>
+
+    <div class="updates-layout">
+
+        <!-- Create Update -->
+        <section class="updates-panel">
+
+            <div class="updates-panel-header">
+                <div class="updates-panel-icon" aria-hidden="true">✍️</div>
+
+                <div>
+                    <h2>Publish a New Update</h2>
+                    <p>
+                        Complete the details below. Your update will appear
+                        in the posted updates section after submission.
+                    </p>
+                </div>
+            </div>
+
+            <div class="updates-panel-body">
+
+                <form method="POST"
+                      enctype="multipart/form-data"
+                      id="updateForm"
+                      novalidate>
+
+                    <div class="update-field">
+                        <label for="updateTitle">
+                            Update Title
+                            <span class="update-required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="updateTitle"
+                            name="title"
+                            class="update-input"
+                            maxlength="200"
+                            placeholder="Enter a clear and descriptive title"
+                            required
+                        >
+
+                        <div class="update-field-help">
+                            <span>Use a title that clearly explains the announcement.</span>
+                            <span class="update-counter" id="titleCounter">0 / 200</span>
+                        </div>
+                    </div>
+
+                    <div class="update-field">
+                        <label for="updateBody">
+                            Announcement Details
+                            <span class="update-required">*</span>
+                        </label>
+
+                        <textarea
+                            id="updateBody"
+                            name="body"
+                            class="update-textarea"
+                            rows="7"
+                            maxlength="5000"
+                            placeholder="Write the full announcement or important information here..."
+                            required
+                        ></textarea>
+
+                        <div class="update-field-help">
+                            <span>Include any relevant dates, instructions or next steps.</span>
+                            <span class="update-counter" id="bodyCounter">0 / 5000</span>
+                        </div>
+                    </div>
+
+                    <div class="update-field">
+                        <label>
+                            Attach Images
+                            <span class="update-optional">(Optional)</span>
+                        </label>
+
+                        <div class="update-upload-box" id="uploadBox">
+
+                            <div class="update-upload-icon" aria-hidden="true">🖼️</div>
+
+                            <h3>Add images to your announcement</h3>
+
+                            <p>
+                                JPEG, PNG or WEBP format<br>
+                                Maximum 4 images, 2 MB per image
+                            </p>
+
+                            <input
+                                type="file"
+                                id="updateImages"
+                                name="images"
+                                class="update-file-input"
+                                accept="image/jpeg,image/png,image/webp"
+                                multiple
+                                aria-describedby="imageStatus"
+                            >
+
+                            <label for="updateImages" class="update-file-label">
+                                <span aria-hidden="true">＋</span>
+                                Choose Images
+                            </label>
+
+                            <div id="imageStatus"
+                                 class="update-image-status"
+                                 role="status"
+                                 aria-live="polite">
+                                No images selected.
+                            </div>
+
+                            <div id="imagePreview" class="update-preview-grid"></div>
+
+                        </div>
+                    </div>
+
+                    <div class="update-form-footer">
+                        <div class="update-footer-note">
+                            <strong>Before publishing:</strong><br>
+                            Review your title, message and attached images.
+                        </div>
+
+                        <button type="submit"
+                                class="update-submit-btn"
+                                id="submitBtn">
+                            <span aria-hidden="true">📣</span>
+                            <span id="submitBtnText">Publish Update</span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+        <!-- Posted Updates -->
+        <section class="updates-panel">
+
+            <div class="updates-panel-header">
+                <div class="updates-panel-icon" aria-hidden="true">📋</div>
+
+                <div style="flex:1;min-width:0;">
+                    <div class="updates-list-heading">
+                        <h2>Posted Updates</h2>
+
+                        <span class="updates-count">
+                            {{ updates|length }}
+                            {% if updates|length == 1 %}Update{% else %}Updates{% endif %}
+                        </span>
+                    </div>
+
+                    <p>
+                        Review announcements that have already been published.
+                    </p>
+                </div>
+            </div>
+
+            {% if not updates %}
+
+                <div class="updates-empty">
+                    <div class="updates-empty-icon" aria-hidden="true">📭</div>
+
+                    <h3>No Updates Published Yet</h3>
+
+                    <p>
+                        Your announcements will appear here after you publish
+                        your first update using the form above.
+                    </p>
+                </div>
+
+            {% else %}
+
+                <div class="updates-list">
+
+                    {% for update in updates %}
+
+                        <article class="update-card">
+
+                            <div class="update-card-top">
+                                <span class="update-published-label">
+                                    <span aria-hidden="true">●</span>
+                                    Published
+                                </span>
+
+                                <span class="update-date">
+                                    {% if update.created_at %}
+                                        {{ update.created_at.strftime('%d %b %Y') }}
+                                    {% else %}
+                                        Date unavailable
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="update-card-content">
+                                <h3>{{ update.title }}</h3>
+
+                                <div class="update-card-body">{{ update.body }}</div>
+                            </div>
+
+                            {% if update.image_urls %}
+                                <div class="update-card-images">
+
+                                    {% for image_url in update.image_urls %}
+                                        <img
+                                            src="{{ image_url }}"
+                                            alt="Image attached to {{ update.title }}"
+                                            loading="lazy"
+                                            class="update-existing-image"
+                                            tabindex="0"
+                                            role="button"
+                                            aria-label="View image attached to {{ update.title }}"
+                                        >
+                                    {% endfor %}
+
+                                </div>
+                            {% endif %}
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
 
             {% endif %}
 
+        </section>
 
-        </article>
+    </div>
+</div>
 
-        {% endfor %}
+<!-- Image viewer -->
+<div class="update-lightbox" id="updateLightbox" aria-modal="true" role="dialog" aria-label="Image preview">
+    <button type="button"
+            class="update-lightbox-close"
+            id="closeLightbox"
+            aria-label="Close image preview">×</button>
 
-
-    {% endif %}
-
-</section>
-
-
-
-<!-- ==========================================================
-     JAVASCRIPT
-     ========================================================== -->
+    <img src="" alt="Expanded update image" id="lightboxImage">
+</div>
 
 <script>
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        const form =
-            document.getElementById("updateForm");
-
-        const imageInput =
-            document.getElementById("images");
-
-        const imageStatus =
-            document.getElementById("imageStatus");
-
-        const imagePreview =
-            document.getElementById("imagePreview");
-
-        const submitButton =
-            document.getElementById("submitBtn");
-
-
-        const MAX_FILES = 4;
-
-        const MAX_FILE_SIZE =
-            2 * 1024 * 1024; // 2 MB
-
-
-        const ALLOWED_TYPES = [
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-        ];
-
-
-        // ======================================================
-        // IMAGE SELECTION
-        // ======================================================
-
-        imageInput.addEventListener(
-            "change",
-            function () {
-
-                const files =
-                    Array.from(imageInput.files);
-
-
-                imagePreview.innerHTML = "";
-
-                imagePreview.style.display =
-                    "none";
-
-
-                // ------------------------------------------------
-                // Number of files
-                // ------------------------------------------------
-
-                if (files.length > MAX_FILES) {
-
-                    alert(
-                        "You can upload a maximum of 4 images."
-                    );
-
-                    imageInput.value = "";
-
-                    imageStatus.textContent =
-                        "Please select no more than 4 images.";
-
-                    return;
-                }
-
-
-                // ------------------------------------------------
-                // Validate files
-                // ------------------------------------------------
-
-                for (const file of files) {
-
-                    if (
-                        !ALLOWED_TYPES.includes(
-                            file.type
-                        )
-                    ) {
-
-                        alert(
-                            `"${file.name}" is not a supported image format.`
-                        );
-
-                        imageInput.value = "";
-
-                        return;
-                    }
-
-
-                    if (
-                        file.size >
-                        MAX_FILE_SIZE
-                    ) {
-
-                        alert(
-                            `"${file.name}" is larger than 2 MB.`
-                        );
-
-                        imageInput.value = "";
-
-                        imageStatus.textContent =
-                            "Each image must be 2 MB or less.";
-
-                        return;
-                    }
-
-                }
-
-
-                // ------------------------------------------------
-                // Display selected count
-                // ------------------------------------------------
-
-                if (files.length > 0) {
-
-                    imageStatus.textContent =
-                        `${files.length} image(s) selected.`;
-
-                } else {
-
-                    imageStatus.textContent =
-                        "JPG, JPEG, PNG or WEBP only. Maximum 4 images.";
-
-                }
-
-
-                // ------------------------------------------------
-                // Create previews
-                // ------------------------------------------------
-
-                if (files.length > 0) {
-
-                    imagePreview.style.display =
-                        "grid";
-
-
-                    files.forEach(
-                        function (file) {
-
-                            const reader =
-                                new FileReader();
-
-
-                            reader.onload =
-                                function (event) {
-
-                                    const wrapper =
-                                        document.createElement(
-                                            "div"
-                                        );
-
-                                    wrapper.className =
-                                        "preview-item";
-
-
-                                    const image =
-                                        document.createElement(
-                                            "img"
-                                        );
-
-                                    image.src =
-                                        event.target.result;
-
-                                    image.alt =
-                                        file.name;
-
-
-                                    wrapper.appendChild(
-                                        image
-                                    );
-
-
-                                    imagePreview.appendChild(
-                                        wrapper
-                                    );
-
-                                };
-
-
-                            reader.readAsDataURL(
-                                file
-                            );
-
-                        }
-                    );
-
-                }
-
-            }
-        );
-
-
-        // ======================================================
-        // FORM SUBMISSION
-        // ======================================================
-
-        form.addEventListener(
-            "submit",
-            function (event) {
-
-                const files =
-                    Array.from(
-                        imageInput.files
-                    );
-
-
-                // ------------------------------------------------
-                // Number of images
-                // ------------------------------------------------
-
-                if (
-                    files.length >
-                    MAX_FILES
-                ) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "You can upload a maximum of 4 images."
-                    );
-
-                    return;
-                }
-
-
-                // ------------------------------------------------
-                // File validation
-                // ------------------------------------------------
-
-                for (const file of files) {
-
-                    if (
-                        !ALLOWED_TYPES.includes(
-                            file.type
-                        )
-                    ) {
-
-                        event.preventDefault();
-
-                        alert(
-                            `"${file.name}" is not a supported image format.`
-                        );
-
-                        return;
-                    }
-
-
-                    if (
-                        file.size >
-                        MAX_FILE_SIZE
-                    ) {
-
-                        event.preventDefault();
-
-                        alert(
-                            `"${file.name}" is larger than 2 MB.`
-                        );
-
-                        return;
-                    }
-
-                }
-
-
-                // ------------------------------------------------
-                // Prevent double submission
-                // ------------------------------------------------
-
-                submitButton.disabled =
-                    true;
-
-                submitButton.textContent =
-                    "Posting Update...";
-
-            }
-        );
-
+(function () {
+    "use strict";
+
+    const form = document.getElementById("updateForm");
+    const titleInput = document.getElementById("updateTitle");
+    const bodyInput = document.getElementById("updateBody");
+    const imageInput = document.getElementById("updateImages");
+    const imageStatus = document.getElementById("imageStatus");
+    const imagePreview = document.getElementById("imagePreview");
+    const uploadBox = document.getElementById("uploadBox");
+    const submitBtn = document.getElementById("submitBtn");
+    const submitBtnText = document.getElementById("submitBtnText");
+
+    const titleCounter = document.getElementById("titleCounter");
+    const bodyCounter = document.getElementById("bodyCounter");
+
+    const MAX_FILES = 4;
+    const MAX_SIZE = 2 * 1024 * 1024;
+    const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    let filesAreValid = true;
+    let previewUrls = [];
+
+    function updateCounter(input, counter, maximum) {
+        counter.textContent = input.value.length + " / " + maximum;
     }
-);
 
+    titleInput.addEventListener("input", function () {
+        updateCounter(titleInput, titleCounter, 200);
+    });
+
+    bodyInput.addEventListener("input", function () {
+        updateCounter(bodyInput, bodyCounter, 5000);
+    });
+
+    function revokePreviewUrls() {
+        previewUrls.forEach(function (url) {
+            URL.revokeObjectURL(url);
+        });
+
+        previewUrls = [];
+    }
+
+    function setImageStatus(message, type) {
+        imageStatus.textContent = message;
+        imageStatus.className = "update-image-status";
+
+        if (type) {
+            imageStatus.classList.add(type);
+        }
+    }
+
+    function clearPreviews() {
+        revokePreviewUrls();
+        imagePreview.replaceChildren();
+    }
+
+    function validateFiles(files) {
+        if (files.length > MAX_FILES) {
+            return "You can select a maximum of 4 images.";
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                return file.name + " is not supported. Use JPEG, PNG or WEBP.";
+            }
+
+            if (file.size > MAX_SIZE) {
+                return file.name + " exceeds the 2 MB file-size limit.";
+            }
+
+            if (file.size === 0) {
+                return file.name + " is empty. Please select another image.";
+            }
+        }
+
+        return "";
+    }
+
+    function showImagePreviews(files) {
+        clearPreviews();
+
+        Array.from(files).forEach(function (file) {
+            const objectUrl = URL.createObjectURL(file);
+            previewUrls.push(objectUrl);
+
+            const item = document.createElement("div");
+            item.className = "update-preview-item";
+
+            const image = document.createElement("img");
+            image.src = objectUrl;
+            image.alt = "Preview of " + file.name;
+
+            const filename = document.createElement("div");
+            filename.className = "update-preview-name";
+            filename.textContent = file.name;
+            filename.title = file.name;
+
+            item.appendChild(image);
+            item.appendChild(filename);
+            imagePreview.appendChild(item);
+        });
+    }
+
+    function validateAndPreview() {
+        const files = Array.from(imageInput.files || []);
+        const error = validateFiles(files);
+
+        filesAreValid = !error;
+
+        if (error) {
+            clearPreviews();
+            setImageStatus(error, "error");
+            return false;
+        }
+
+        if (files.length === 0) {
+            clearPreviews();
+            setImageStatus("No images selected.", "");
+            return true;
+        }
+
+        showImagePreviews(files);
+
+        setImageStatus(
+            files.length + (files.length === 1 ? " image selected." : " images selected.") +
+            " All files passed the browser checks.",
+            "success"
+        );
+
+        return true;
+    }
+
+    imageInput.addEventListener("change", validateAndPreview);
+
+    uploadBox.addEventListener("dragover", function (event) {
+        event.preventDefault();
+        uploadBox.classList.add("drag-active");
+    });
+
+    uploadBox.addEventListener("dragleave", function (event) {
+        if (!uploadBox.contains(event.relatedTarget)) {
+            uploadBox.classList.remove("drag-active");
+        }
+    });
+
+    uploadBox.addEventListener("drop", function (event) {
+        event.preventDefault();
+        uploadBox.classList.remove("drag-active");
+
+        if (event.dataTransfer && event.dataTransfer.files) {
+            try {
+                imageInput.files = event.dataTransfer.files;
+                validateAndPreview();
+            } catch (error) {
+                setImageStatus(
+                    "Please use the Choose Images button to select your files.",
+                    "error"
+                );
+            }
+        }
+    });
+
+    form.addEventListener("submit", function (event) {
+        const title = titleInput.value.trim();
+        const body = bodyInput.value.trim();
+
+        if (!title || !body) {
+            event.preventDefault();
+
+            if (!title) {
+                titleInput.focus();
+            } else {
+                bodyInput.focus();
+            }
+
+            return;
+        }
+
+        if (!validateAndPreview() || !filesAreValid) {
+            event.preventDefault();
+            imageInput.focus();
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtnText.textContent = "Publishing Update...";
+    });
+
+    /*
+     * Image viewer for previously published update images.
+     */
+    const lightbox = document.getElementById("updateLightbox");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const closeLightbox = document.getElementById("closeLightbox");
+    let lastFocusedElement = null;
+
+    function openLightbox(src, alt) {
+        lastFocusedElement = document.activeElement;
+        lightboxImage.src = src;
+        lightboxImage.alt = alt || "Expanded update image";
+        lightbox.classList.add("open");
+        document.body.style.overflow = "hidden";
+        closeLightbox.focus();
+    }
+
+    function closeImageViewer() {
+        lightbox.classList.remove("open");
+        lightboxImage.removeAttribute("src");
+        document.body.style.overflow = "";
+
+        if (lastFocusedElement) {
+            lastFocusedElement.focus();
+        }
+    }
+
+    document.querySelectorAll(".update-existing-image").forEach(function (image) {
+        image.addEventListener("click", function () {
+            openLightbox(image.src, image.alt);
+        });
+
+        image.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openLightbox(image.src, image.alt);
+            }
+        });
+    });
+
+    closeLightbox.addEventListener("click", closeImageViewer);
+
+    lightbox.addEventListener("click", function (event) {
+        if (event.target === lightbox) {
+            closeImageViewer();
+        }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && lightbox.classList.contains("open")) {
+            closeImageViewer();
+        }
+    });
+
+    window.addEventListener("beforeunload", revokePreviewUrls);
+
+    updateCounter(titleInput, titleCounter, 200);
+    updateCounter(bodyInput, bodyCounter, 5000);
+})();
 </script>
-
 
 {% endblock %}
