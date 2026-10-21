@@ -1,364 +1,1041 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {{ company.company_name }} | Customer Support
+    {{ company.company_name }} | Customer Support Centre
 {% endblock %}
-
 
 {% block content %}
 
+<style>
+/* =========================================================
+   AV KING STYLE — CUSTOMER SUPPORT CENTRE
+   ========================================================= */
 
-<!-- =========================================================
-     HERO
-     ========================================================= -->
+.support-home {
+    --support-green: #087443;
+    --support-dark: #064e32;
+    --support-light: #eaf6ef;
+    --support-text: #172b22;
+    --support-muted: #64746b;
+    --support-border: #e1eae4;
 
-<section class="home-hero">
+    color: var(--support-text);
+    background: #f7faf8;
+    min-height: 100vh;
+    overflow: hidden;
+}
 
-    <div class="page-container">
+.support-home * {
+    box-sizing: border-box;
+}
 
-        <div class="hero-grid">
+.support-container {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+}
 
+/* HERO */
 
-            <!-- LEFT: BRAND -->
+.support-hero {
+    position: relative;
+    padding: 76px 0 82px;
+    background:
+        radial-gradient(
+            circle at 12% 15%,
+            rgba(28, 150, 92, .13),
+            transparent 30%
+        ),
+        linear-gradient(135deg, #ffffff 0%, #f0f8f3 100%);
+    border-bottom: 1px solid #e3eee7;
+}
 
-            <div class="hero-brand-panel">
+.support-hero::before {
+    content: "";
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    border: 1px solid rgba(8, 116, 67, .09);
+    border-radius: 50%;
+    right: -120px;
+    top: -120px;
+    pointer-events: none;
+}
 
-                {% if company.logo_url %}
+.support-hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: .82fr 1.5fr;
+    gap: 65px;
+    align-items: center;
+}
 
-                    <div class="hero-logo-box">
+.support-brand {
+    min-height: 330px;
+    padding: 35px;
+    border-radius: 28px;
+    background: linear-gradient(
+        145deg,
+        #064e32,
+        #087443 65%,
+        #15965b
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 24px 55px rgba(6, 78, 50, .16);
+}
 
-                        <img
-                            src="{{ company.logo_url }}"
-                            alt="{{ company.company_name }} logo"
-                            class="hero-logo"
-                        >
+.support-brand::before,
+.support-brand::after {
+    content: "";
+    position: absolute;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50%;
+}
+
+.support-brand::before {
+    width: 290px;
+    height: 290px;
+    right: -115px;
+    top: -115px;
+}
+
+.support-brand::after {
+    width: 230px;
+    height: 230px;
+    left: -110px;
+    bottom: -110px;
+}
+
+.support-logo-frame {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.support-logo {
+    display: block;
+    max-width: 100%;
+    max-height: 235px;
+    object-fit: contain;
+    border-radius: 14px;
+}
+
+.support-logo-fallback {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.13);
+    border: 2px solid rgba(255,255,255,.45);
+    border-radius: 35px;
+    color: #fff;
+    font-size: 76px;
+    font-weight: 800;
+}
+
+.support-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--support-green);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.support-eyebrow::before {
+    content: "";
+    width: 25px;
+    height: 3px;
+    background: var(--support-green);
+    border-radius: 5px;
+}
+
+.support-hero h1 {
+    margin: 0 0 22px;
+    max-width: 700px;
+    color: var(--support-dark);
+    font-size: clamp(34px, 4.5vw, 57px);
+    font-weight: 850;
+    line-height: 1.12;
+    letter-spacing: -1.8px;
+}
+
+.support-hero h1 span {
+    display: block;
+    color: var(--support-green);
+}
+
+.support-description {
+    max-width: 600px;
+    margin: 0 0 27px;
+    color: var(--support-muted);
+    font-size: 16px;
+    line-height: 1.9;
+}
+
+.support-company-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.support-detail {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    max-width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--support-border);
+    border-radius: 12px;
+    background: rgba(255,255,255,.8);
+    color: var(--support-muted);
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.support-detail strong {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--support-dark);
+    font-size: 12px;
+}
+
+.support-detail-icon {
+    color: var(--support-green);
+    font-size: 18px;
+}
+
+.support-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 13px;
+}
+
+.support-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 51px;
+    padding: 14px 22px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 750;
+    text-align: center;
+    text-decoration: none;
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+.support-button:hover {
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.support-button-primary {
+    color: #fff;
+    background: var(--support-green);
+    box-shadow: 0 9px 22px rgba(8,116,67,.18);
+}
+
+.support-button-primary:hover {
+    color: #fff;
+    background: var(--support-dark);
+    box-shadow: 0 12px 25px rgba(8,116,67,.24);
+}
+
+.support-button-secondary {
+    color: var(--support-dark);
+    background: #fff;
+    border-color: #d8e5dc;
+}
+
+.support-button-secondary:hover {
+    color: var(--support-green);
+    background: var(--support-light);
+    border-color: #b9d9c5;
+}
+
+/* GENERAL SECTIONS */
+
+.support-section {
+    padding: 76px 0;
+}
+
+.support-section-heading {
+    max-width: 670px;
+    margin: 0 auto 42px;
+    text-align: center;
+}
+
+.support-section-label {
+    display: inline-block;
+    margin-bottom: 13px;
+    color: var(--support-green);
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.support-section-heading h2,
+.support-updates-heading h2 {
+    margin: 0 0 14px;
+    color: var(--support-dark);
+    font-size: clamp(27px, 3vw, 37px);
+    font-weight: 850;
+    line-height: 1.25;
+    letter-spacing: -.7px;
+}
+
+.support-section-heading p {
+    margin: 0;
+    color: var(--support-muted);
+    font-size: 15px;
+    line-height: 1.85;
+}
+
+/* PROCESS CARDS */
+
+.support-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.support-step-card {
+    position: relative;
+    padding: 29px 27px;
+    background: #fff;
+    border: 1px solid var(--support-border);
+    border-radius: 19px;
+    box-shadow: 0 7px 25px rgba(22, 61, 39, .035);
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+.support-step-card:hover {
+    transform: translateY(-5px);
+    border-color: #b9d9c5;
+    box-shadow: 0 17px 35px rgba(22,61,39,.08);
+}
+
+.support-step-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.support-step-icon {
+    width: 53px;
+    height: 53px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: var(--support-light);
+    color: var(--support-green);
+    font-size: 24px;
+}
+
+.support-step-number {
+    color: #c6d8cc;
+    font-size: 27px;
+    font-weight: 850;
+    letter-spacing: -1px;
+}
+
+.support-step-card h3 {
+    margin: 0 0 12px;
+    color: var(--support-dark);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.support-step-card p {
+    margin: 0;
+    color: var(--support-muted);
+    font-size: 14px;
+    line-height: 1.85;
+}
+
+/* UPDATES */
+
+.support-updates-section {
+    padding: 75px 0;
+    background: #fff;
+    border-top: 1px solid var(--support-border);
+    border-bottom: 1px solid var(--support-border);
+}
+
+.support-updates-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.support-updates-heading .support-section-label {
+    margin-bottom: 10px;
+}
+
+.support-updates-heading h2 {
+    margin-bottom: 0;
+}
+
+.support-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    padding-bottom: 5px;
+    color: var(--support-green);
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.support-view-all:hover {
+    color: var(--support-dark);
+    text-decoration: underline;
+}
+
+.support-updates-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.support-update-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--support-border);
+    border-radius: 17px;
+    box-shadow: 0 6px 22px rgba(22,61,39,.04);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.support-update-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(22,61,39,.08);
+}
+
+.support-update-content {
+    padding: 24px;
+}
+
+.support-update-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 15px;
+    color: var(--support-green);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.support-update-card h3 {
+    margin: 0 0 12px;
+    color: var(--support-dark);
+    font-size: 19px;
+    line-height: 1.45;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.support-update-card p {
+    margin: 0;
+    color: var(--support-muted);
+    font-size: 14px;
+    line-height: 1.85;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.support-update-images {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 20px;
+}
+
+.support-update-images img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #f0f5f1;
+}
+
+.support-update-images img:only-child {
+    grid-column: 1 / -1;
+    aspect-ratio: 16 / 9;
+}
+
+/* FINAL CTA */
+
+.support-final-section {
+    padding: 72px 0;
+    background: #f7faf8;
+}
+
+.support-final-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    overflow: hidden;
+    padding: 42px 45px;
+    border-radius: 23px;
+    background: linear-gradient(
+        115deg,
+        #064e32,
+        #087443 70%,
+        #0b8750
+    );
+    box-shadow: 0 20px 45px rgba(6,78,50,.13);
+}
+
+.support-final-card::after {
+    content: "";
+    position: absolute;
+    width: 270px;
+    height: 270px;
+    right: -80px;
+    bottom: -180px;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 50%;
+    box-shadow: 0 0 0 35px rgba(255,255,255,.035);
+    pointer-events: none;
+}
+
+.support-final-content {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+}
+
+.support-final-label {
+    display: block;
+    margin-bottom: 12px;
+    color: #b8e6ca;
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: 2px;
+}
+
+.support-final-card h2 {
+    margin: 0 0 12px;
+    color: #fff;
+    font-size: clamp(27px, 3vw, 37px);
+    line-height: 1.25;
+    font-weight: 850;
+}
+
+.support-final-card p {
+    margin: 0;
+    color: #d5eadc;
+    font-size: 14px;
+    line-height: 1.85;
+}
+
+.support-final-card .support-button {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    color: var(--support-dark);
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0,0,0,.1);
+}
+
+.support-final-card .support-button:hover {
+    color: var(--support-green);
+    background: #f0f8f3;
+}
+
+/* ACCESSIBILITY */
+
+.support-home a:focus-visible {
+    outline: 3px solid #e6a23c;
+    outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .support-home *,
+    .support-home *::before,
+    .support-home *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+    }
+}
+
+/* TABLETS */
+
+@media (max-width: 900px) {
+    .support-hero {
+        padding: 55px 0 62px;
+    }
+
+    .support-hero-grid {
+        grid-template-columns: .75fr 1.25fr;
+        gap: 32px;
+    }
+
+    .support-brand {
+        min-height: 260px;
+        padding: 24px;
+    }
+
+    .support-logo-frame {
+        min-height: 180px;
+    }
+
+    .support-logo {
+        max-height: 190px;
+    }
+
+    .support-steps,
+    .support-updates-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .support-step-card:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .support-final-card {
+        padding: 35px;
+    }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+    .support-container {
+        width: min(100% - 30px, 1180px);
+    }
+
+    .support-hero {
+        padding: 32px 0 46px;
+    }
+
+    .support-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .support-brand {
+        min-height: 185px;
+        border-radius: 21px;
+    }
+
+    .support-logo-frame {
+        min-height: 135px;
+    }
+
+    .support-logo {
+        max-height: 150px;
+    }
+
+    .support-logo-fallback {
+        width: 100px;
+        height: 100px;
+        border-radius: 25px;
+        font-size: 52px;
+    }
+
+    .support-hero h1 {
+        font-size: 37px;
+        letter-spacing: -1.1px;
+    }
+
+    .support-description {
+        font-size: 14px;
+        line-height: 1.85;
+    }
+
+    .support-company-details {
+        flex-direction: column;
+    }
+
+    .support-detail {
+        width: 100%;
+    }
+
+    .support-actions {
+        flex-direction: column;
+    }
+
+    .support-button {
+        width: 100%;
+    }
+
+    .support-section,
+    .support-updates-section {
+        padding: 53px 0;
+    }
+
+    .support-section-heading {
+        margin-bottom: 30px;
+    }
+
+    .support-section-heading h2,
+    .support-updates-heading h2 {
+        font-size: 28px;
+    }
+
+    .support-steps,
+    .support-updates-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .support-step-card:last-child {
+        grid-column: auto;
+    }
+
+    .support-step-card {
+        padding: 25px;
+    }
+
+    .support-updates-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .support-update-content {
+        padding: 21px;
+    }
+
+    .support-final-section {
+        padding: 48px 0;
+    }
+
+    .support-final-card {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 29px 24px;
+        border-radius: 19px;
+    }
+
+    .support-final-card h2 {
+        font-size: 29px;
+    }
+}
+</style>
+
+<main class="support-home">
+
+    <!-- HERO -->
+    <section class="support-hero">
+        <div class="support-container">
+            <div class="support-hero-grid">
+
+                <div class="support-brand">
+                    <div class="support-logo-frame">
+
+                        {% if company.logo_url %}
+                            <img
+                                src="{{ company.logo_url }}"
+                                alt="{{ company.company_name }} logo"
+                                class="support-logo"
+                            >
+                        {% else %}
+                            <div
+                                class="support-logo-fallback"
+                                aria-label="{{ company.company_name }} logo placeholder"
+                            >
+                                {{ company.company_name[:1] }}
+                            </div>
+                        {% endif %}
 
                     </div>
+                </div>
 
-                {% else %}
+                <div class="support-hero-content">
 
-                    <div class="hero-logo-box hero-logo-placeholder">
-
-                        <span>
-                            {{ company.company_name[:1] }}
-                        </span>
-
-                    </div>
-
-                {% endif %}
-
-            </div>
-
-
-            <!-- RIGHT: CONTENT -->
-
-            <div class="hero-content">
-
-                <span class="hero-eyebrow">
-                    CUSTOMER SUPPORT
-                </span>
-
-
-                <h1>
-                    Tell us what went wrong.
-                    <span>
-                        We'll make it right.
+                    <span class="support-eyebrow">
+                        Customer Support Centre
                     </span>
-                </h1>
 
-
-                <p class="hero-description">
-
-                    Your feedback matters to us. Report an issue,
-                    share the details, and our support team will
-                    review your complaint and respond as quickly
-                    as possible.
-
-                </p>
-
-
-                {% if company.location or company.phone %}
-
-                    <div class="hero-company-details">
-
-                        {% if company.location %}
-
-                            <span>
-                                <strong>Location</strong>
-                                {{ company.location }}
-                            </span>
-
-                        {% endif %}
-
-
-                        {% if company.phone %}
-
-                            <span>
-                                <strong>Phone</strong>
-                                {{ company.phone }}
-                            </span>
-
-                        {% endif %}
-
-                    </div>
-
-                {% endif %}
-
-
-                <div class="hero-actions">
-
-                    <a
-                        href="{{ url_for('submit_complaint') }}"
-                        class="home-primary-button"
-                    >
-                        Report an Issue
-                        <span>&rarr;</span>
-                    </a>
-
-
-                    <a
-                        href="{{ url_for('track_complaint') }}"
-                        class="home-secondary-button"
-                    >
-                        Track a Complaint
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     HOW IT WORKS
-     ========================================================= -->
-
-<section class="how-section">
-
-    <div class="page-container">
-
-        <div class="section-heading">
-
-            <span>
-                SIMPLE &amp; TRANSPARENT
-            </span>
-
-            <h2>
-                How our support works
-            </h2>
-
-            <p>
-                Getting help is simple. Submit your complaint,
-                keep your tracking code, and follow the conversation
-                from anywhere.
-            </p>
-
-        </div>
-
-
-        <div class="steps-grid">
-
-
-            <div class="step-card">
-
-                <div class="step-number">
-                    01
-                </div>
-
-                <h3>
-                    Report the issue
-                </h3>
-
-                <p>
-                    Tell us what happened and provide the relevant
-                    details. You can also attach photos when helpful.
-                </p>
-
-            </div>
-
-
-            <div class="step-card">
-
-                <div class="step-number">
-                    02
-                </div>
-
-                <h3>
-                    Receive your tracking code
-                </h3>
-
-                <p>
-                    Your complaint receives a unique tracking code
-                    that you can use to check its progress.
-                </p>
-
-            </div>
-
-
-            <div class="step-card">
-
-                <div class="step-number">
-                    03
-                </div>
-
-                <h3>
-                    Follow the response
-                </h3>
-
-                <p>
-                    Return to the portal whenever you need to view
-                    replies or continue the conversation.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     LATEST UPDATES
-     ========================================================= -->
-
-{% if updates %}
-
-<section class="updates-section">
-
-    <div class="page-container">
-
-        <div class="updates-heading">
-
-            <div>
-
-                <span>
-                    NEWS &amp; INFORMATION
-                </span>
-
-                <h2>
-                    Latest Updates
-                </h2>
-
-            </div>
-
-
-            <a
-                href="{{ url_for('updates_feed') }}"
-                class="view-all-link"
-            >
-                View all
-                &rarr;
-            </a>
-
-        </div>
-
-
-        <div class="updates-grid">
-
-            {% for update in updates %}
-
-            <article class="update-card">
-
-                <div class="update-card-content">
-
-                    <time class="update-date">
-
-                        {{ update.created_at.strftime('%d %b %Y') }}
-
-                    </time>
-
-
-                    <h3>
-                        {{ update.title }}
-                    </h3>
-
-
-                    <p>
-                        {{ update.body }}
+                    <h1>
+                        Your concerns matter.
+                        <span>We're here to help.</span>
+                    </h1>
+
+                    <p class="support-description">
+                        We're committed to providing you with a
+                        reliable support experience. Submit a complaint,
+                        explain your concern, and let our team work
+                        towards a resolution.
                     </p>
 
+                    {% if company.location or company.phone %}
+                        <div class="support-company-details">
 
-                    {% if update.image_urls %}
+                            {% if company.location %}
+                                <div class="support-detail">
+                                    <span class="support-detail-icon"
+                                          aria-hidden="true">⌖</span>
+                                    <div>
+                                        <strong>Our Location</strong>
+                                        {{ company.location }}
+                                    </div>
+                                </div>
+                            {% endif %}
 
-                    <div class="update-images">
+                            {% if company.phone %}
+                                <div class="support-detail">
+                                    <span class="support-detail-icon"
+                                          aria-hidden="true">☎</span>
+                                    <div>
+                                        <strong>Contact Support</strong>
+                                        {{ company.phone }}
+                                    </div>
+                                </div>
+                            {% endif %}
 
-                        {% for img in update.image_urls %}
+                        </div>
+                    {% endif %}
 
-                            <img
-                                src="{{ img }}"
-                                alt=""
-                                loading="lazy"
-                            >
+                    <div class="support-actions">
 
-                        {% endfor %}
+                        <a
+                            href="{{ url_for('submit_complaint') }}"
+                            class="support-button support-button-primary"
+                        >
+                            Submit a Complaint
+                            <span aria-hidden="true">→</span>
+                        </a>
+
+                        <a
+                            href="{{ url_for('track_complaint') }}"
+                            class="support-button support-button-secondary"
+                        >
+                            Track Existing Complaint
+                        </a>
 
                     </div>
 
-                    {% endif %}
-
                 </div>
-
-            </article>
-
-            {% endfor %}
-
+            </div>
         </div>
+    </section>
 
-    </div>
+    <!-- HOW IT WORKS -->
+    <section class="support-section">
+        <div class="support-container">
 
-</section>
+            <div class="support-section-heading">
 
-{% endif %}
-
-
-<!-- =========================================================
-     FINAL CTA
-     ========================================================= -->
-
-<section class="final-cta">
-
-    <div class="page-container">
-
-        <div class="final-cta-box">
-
-            <div>
-
-                <span>
-                    NEED ASSISTANCE?
+                <span class="support-section-label">
+                    A CLEAR PROCESS
                 </span>
 
-                <h2>
-                    We're here to help.
-                </h2>
+                <h2>How our support process works</h2>
 
                 <p>
-                    Submit your complaint and our team will review
-                    it and get back to you.
+                    From submission to resolution, our process helps
+                    you communicate your concerns and follow progress
+                    through your complaint tracking code.
                 </p>
 
             </div>
 
+            <div class="support-steps">
 
-            <a
-                href="{{ url_for('submit_complaint') }}"
-                class="home-primary-button"
-            >
-                Report an Issue
-                <span>&rarr;</span>
-            </a>
+                <article class="support-step-card">
+
+                    <div class="support-step-top">
+                        <div class="support-step-icon"
+                             aria-hidden="true">✎</div>
+                        <span class="support-step-number">01</span>
+                    </div>
+
+                    <h3>Submit your complaint</h3>
+
+                    <p>
+                        Describe the issue clearly and provide the
+                        relevant information. Attach supporting images
+                        where necessary.
+                    </p>
+
+                </article>
+
+                <article class="support-step-card">
+
+                    <div class="support-step-top">
+                        <div class="support-step-icon"
+                             aria-hidden="true">⌕</div>
+                        <span class="support-step-number">02</span>
+                    </div>
+
+                    <h3>Keep your tracking code</h3>
+
+                    <p>
+                        Once your complaint has been submitted, keep
+                        your unique tracking code safe so you can
+                        check its progress later.
+                    </p>
+
+                </article>
+
+                <article class="support-step-card">
+
+                    <div class="support-step-top">
+                        <div class="support-step-icon"
+                             aria-hidden="true">✓</div>
+                        <span class="support-step-number">03</span>
+                    </div>
+
+                    <h3>Follow up on your case</h3>
+
+                    <p>
+                        Return to the support portal to review available
+                        updates, read responses, and continue the
+                        conversation when needed.
+                    </p>
+
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- LATEST UPDATES -->
+    {% if updates %}
+    <section class="support-updates-section">
+        <div class="support-container">
+
+            <div class="support-updates-heading">
+
+                <div>
+                    <span class="support-section-label">
+                        KEEP INFORMED
+                    </span>
+
+                    <h2>Latest Updates</h2>
+                </div>
+
+                <a
+                    href="{{ url_for('updates_feed') }}"
+                    class="support-view-all"
+                >
+                    View all updates
+                    <span aria-hidden="true">→</span>
+                </a>
+
+            </div>
+
+            <div class="support-updates-grid">
+
+                {% for update in updates %}
+                <article class="support-update-card">
+
+                    <div class="support-update-content">
+
+                        <time class="support-update-date"
+                              {% if update.created_at %}
+                              datetime="{{ update.created_at.strftime('%Y-%m-%d') }}"
+                              {% endif %}>
+                            <span aria-hidden="true">◷</span>
+
+                            {% if update.created_at %}
+                                {{ update.created_at.strftime('%d %b %Y') }}
+                            {% else %}
+                                Date unavailable
+                            {% endif %}
+                        </time>
+
+                        <h3>{{ update.title }}</h3>
+
+                        <p>{{ update.body }}</p>
+
+                        {% if update.image_urls %}
+                            <div class="support-update-images">
+
+                                {% for img in update.image_urls %}
+                                    <img
+                                        src="{{ img }}"
+                                        alt="Image accompanying {{ update.title }}"
+                                        loading="lazy"
+                                    >
+                                {% endfor %}
+
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </article>
+                {% endfor %}
+
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- FINAL CALL TO ACTION -->
+    <section class="support-final-section">
+        <div class="support-container">
+
+            <div class="support-final-card">
+
+                <div class="support-final-content">
+
+                    <span class="support-final-label">
+                        WE'RE READY TO LISTEN
+                    </span>
+
+                    <h2>Let us help resolve your concern.</h2>
+
+                    <p>
+                        Our support portal gives you a convenient way
+                        to report an issue and follow up on your case.
+                        Start your complaint today.
+                    </p>
+
+                </div>
+
+                <a
+                    href="{{ url_for('submit_complaint') }}"
+                    class="support-button"
+                >
+                    Get Support
+                    <span aria-hidden="true">→</span>
+                </a>
+
+            </div>
 
         </div>
+    </section>
 
-    </div>
-
-</section>
-
+</main>
 
 {% endblock %}
