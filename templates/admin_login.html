@@ -2,287 +2,754 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="description" content="Secure administration portal for {{ company.company_name }}">
 
-    <meta
-        name="description"
-        content="Administration Login"
-    >
+    <meta name="theme-color" content="#064e32">
 
-    <title>
-        Admin Login | {{ company.company_name }}
-    </title>
+    <title>Admin Login | {{ company.company_name }}</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Google Font -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <style>
+        :root {
+            --login-green: #087443;
+            --login-green-dark: #064e32;
+            --login-green-light: #eaf6ef;
+            --login-text: #182b21;
+            --login-muted: #748078;
+            --login-border: #dfe8e1;
+            --login-danger: #b42318;
+        }
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+        * {
+            box-sizing: border-box;
+        }
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+        html {
+            min-height: 100%;
+        }
 
+        body.admin-login-body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            background: #f4f7f5;
+            color: var(--login-text);
+            -webkit-font-smoothing: antialiased;
+        }
 
-    <!-- Main CSS -->
+        .admin-login-page {
+            display: grid;
+            grid-template-columns: minmax(340px, 0.88fr) minmax(460px, 1.12fr);
+            min-height: 100vh;
+        }
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+        /* BRANDING PANEL */
 
+        .admin-login-brand {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            min-height: 100vh;
+            padding: 65px clamp(30px, 6vw, 85px);
+            background:
+                radial-gradient(circle at 8% 8%, rgba(255,255,255,.09), transparent 30%),
+                radial-gradient(circle at 100% 85%, rgba(29, 176, 105, .2), transparent 35%),
+                linear-gradient(145deg, #043e28 0%, #075c39 52%, #087443 100%);
+            color: #fff;
+        }
+
+        .admin-login-brand::before,
+        .admin-login-brand::after {
+            position: absolute;
+            content: "";
+            pointer-events: none;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 50%;
+        }
+
+        .admin-login-brand::before {
+            width: 430px;
+            height: 430px;
+            top: -190px;
+            right: -210px;
+            box-shadow:
+                0 0 0 40px rgba(255,255,255,.025),
+                0 0 0 80px rgba(255,255,255,.02);
+        }
+
+        .admin-login-brand::after {
+            width: 350px;
+            height: 350px;
+            bottom: -230px;
+            left: -180px;
+            box-shadow: 0 0 0 45px rgba(255,255,255,.025);
+        }
+
+        .admin-login-brand-inner {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 510px;
+            margin: auto;
+        }
+
+        .admin-login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 76px;
+            height: 76px;
+            margin-bottom: 27px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 22px;
+            background: #fff;
+            box-shadow: 0 12px 30px rgba(0,0,0,.13);
+        }
+
+        .admin-login-logo img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 7px;
+            object-fit: contain;
+        }
+
+        .admin-login-logo span {
+            color: var(--login-green);
+            font-size: 27px;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+
+        .admin-login-company h1 {
+            margin: 0 0 10px;
+            color: #fff;
+            font-size: clamp(24px, 3vw, 35px);
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -1px;
+            overflow-wrap: anywhere;
+        }
+
+        .admin-login-company > span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #b8e8ca;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2.1px;
+        }
+
+        .admin-login-company > span::before {
+            display: inline-block;
+            width: 20px;
+            height: 2px;
+            background: #a4e4bb;
+            content: "";
+        }
+
+        .admin-login-divider {
+            width: 65px;
+            height: 3px;
+            margin: 32px 0;
+            border-radius: 10px;
+            background: #8fe1ad;
+        }
+
+        .admin-login-brand-inner > h2 {
+            max-width: 460px;
+            margin: 0 0 18px;
+            color: #fff;
+            font-size: clamp(29px, 3.2vw, 43px);
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -1.5px;
+        }
+
+        .admin-login-brand-inner > p {
+            max-width: 430px;
+            margin: 0;
+            color: rgba(255,255,255,.76);
+            font-size: 14px;
+            line-height: 1.95;
+        }
+
+        .admin-login-features {
+            display: grid;
+            gap: 17px;
+            margin-top: 35px;
+        }
+
+        .admin-login-feature {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            color: rgba(255,255,255,.94);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .feature-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 27px;
+            height: 27px;
+            flex-shrink: 0;
+            border: 1px solid rgba(174,238,194,.25);
+            border-radius: 9px;
+            background: rgba(173,239,194,.13);
+            color: #b6f0ca;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .admin-login-brand-footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 55px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(255,255,255,.15);
+            color: rgba(255,255,255,.63);
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        /* LOGIN PANEL */
+
+        .admin-login-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+            padding: 55px clamp(25px, 6vw, 95px);
+            background:
+                radial-gradient(circle at 95% 5%, rgba(8,116,67,.035), transparent 27%),
+                #f8faf8;
+        }
+
+        .admin-login-card {
+            width: 100%;
+            max-width: 440px;
+            margin: auto;
+        }
+
+        .admin-login-mobile-logo {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 63px;
+            height: 63px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid var(--login-border);
+            border-radius: 17px;
+            background: #fff;
+            box-shadow: 0 5px 16px rgba(15,55,33,.06);
+        }
+
+        .admin-login-mobile-logo img {
+            width: 100%;
+            height: 100%;
+            padding: 6px;
+            object-fit: contain;
+        }
+
+        .admin-login-mobile-logo span {
+            color: var(--login-green);
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .login-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            color: var(--login-green);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .login-eyebrow::before {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #15a05e;
+            box-shadow: 0 0 0 4px rgba(21,160,94,.1);
+            content: "";
+        }
+
+        .admin-login-heading h2 {
+            margin: 0 0 12px;
+            color: var(--login-text);
+            font-size: clamp(30px, 3vw, 38px);
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -1.2px;
+        }
+
+        .admin-login-heading p {
+            margin: 0;
+            color: var(--login-muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .admin-login-flashes {
+            display: grid;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .admin-login-alert {
+            padding: 13px 15px;
+            border: 1px solid #d9e6dc;
+            border-radius: 11px;
+            background: #fff;
+            color: #34483a;
+            font-size: 12px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .admin-login-alert-danger,
+        .admin-login-alert-error {
+            border-color: #f3c9c5;
+            background: #fff5f4;
+            color: var(--login-danger);
+        }
+
+        .admin-login-alert-success {
+            border-color: #bfe3cb;
+            background: #f0faf3;
+            color: #176b3b;
+        }
+
+        .admin-login-alert-warning {
+            border-color: #f0ddb0;
+            background: #fffaf0;
+            color: #8b5b08;
+        }
+
+        .admin-login-form {
+            display: grid;
+            gap: 23px;
+            margin-top: 34px;
+        }
+
+        .login-field {
+            min-width: 0;
+        }
+
+        .login-field > label,
+        .login-label-row label {
+            display: block;
+            margin-bottom: 10px;
+            color: #263a2e;
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .login-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .login-input-wrapper {
+            display: flex;
+            align-items: center;
+            min-height: 54px;
+            overflow: hidden;
+            border: 1px solid #dce6de;
+            border-radius: 12px;
+            background: #fff;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .login-input-wrapper:focus-within {
+            border-color: var(--login-green);
+            box-shadow: 0 0 0 4px rgba(8,116,67,.09);
+        }
+
+        .login-input-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 49px;
+            flex-shrink: 0;
+            color: #829187;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .login-input-wrapper input {
+            width: 100%;
+            min-width: 0;
+            height: 52px;
+            padding: 0 15px 0 0;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--login-text);
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .login-input-wrapper input::placeholder {
+            color: #a1aca4;
+        }
+
+        .login-password-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 48px;
+            height: 48px;
+            padding: 0 12px;
+            border: 0;
+            background: transparent;
+            color: var(--login-green);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .login-password-toggle:hover {
+            color: var(--login-green-dark);
+        }
+
+        .admin-login-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            width: 100%;
+            min-height: 55px;
+            margin-top: 5px;
+            padding: 0 20px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(115deg, #087443, #099354);
+            color: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 7px 17px rgba(8,116,67,.17);
+            transition: transform .2s, box-shadow .2s, opacity .2s;
+        }
+
+        .admin-login-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 23px rgba(8,116,67,.25);
+        }
+
+        .admin-login-button:focus-visible,
+        .login-password-toggle:focus-visible,
+        .back-to-site:focus-visible {
+            outline: 3px solid rgba(8,116,67,.28);
+            outline-offset: 3px;
+        }
+
+        .admin-login-button:disabled {
+            opacity: .7;
+            cursor: wait;
+        }
+
+        .login-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,.24);
+            border-radius: 9px;
+            background: rgba(255,255,255,.12);
+            font-size: 18px;
+            transition: transform .2s;
+        }
+
+        .admin-login-button:hover:not(:disabled) .login-arrow {
+            transform: translateX(3px);
+        }
+
+        /* SECURITY INFORMATION */
+
+        .admin-login-security {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 27px;
+            padding: 17px;
+            border: 1px solid #dcebe0;
+            border-radius: 13px;
+            background: #f0f8f2;
+        }
+
+        .security-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 29px;
+            height: 29px;
+            flex-shrink: 0;
+            border-radius: 9px;
+            background: #dcefe2;
+            color: var(--login-green);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .admin-login-security strong {
+            display: block;
+            margin: 1px 0 5px;
+            color: #21563a;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .admin-login-security div > span {
+            display: block;
+            color: #6b7f71;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .back-to-site {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: fit-content;
+            margin: 26px auto 0;
+            color: #64746a;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            transition: color .2s;
+        }
+
+        .back-to-site:hover {
+            color: var(--login-green);
+        }
+
+        @media (max-width: 1000px) {
+            .admin-login-page {
+                grid-template-columns: minmax(290px, .8fr) minmax(390px, 1.2fr);
+            }
+
+            .admin-login-brand {
+                padding: 45px 35px;
+            }
+
+            .admin-login-panel {
+                padding: 45px 35px;
+            }
+
+            .admin-login-brand-inner > h2 {
+                font-size: 31px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .admin-login-page {
+                display: block;
+                min-height: 100vh;
+            }
+
+            .admin-login-brand {
+                display: none;
+            }
+
+            .admin-login-panel {
+                min-height: 100vh;
+                padding: 35px 22px;
+            }
+
+            .admin-login-card {
+                max-width: 440px;
+            }
+
+            .admin-login-mobile-logo {
+                display: flex;
+            }
+
+            .admin-login-heading h2 {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .admin-login-panel {
+                padding: 27px 17px;
+            }
+
+            .admin-login-heading h2 {
+                font-size: 29px;
+            }
+
+            .admin-login-form {
+                gap: 19px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+                animation-duration: .01ms !important;
+            }
+        }
+    </style>
 </head>
-
 
 <body class="admin-login-body">
 
-
 <div class="admin-login-page">
 
-
-    <!-- =====================================================
-         LEFT BRANDING PANEL
-         ===================================================== -->
-
+    <!-- LEFT BRANDING PANEL -->
     <section class="admin-login-brand">
-
 
         <div class="admin-login-brand-inner">
 
-
-            <!-- LOGO -->
-
             <div class="admin-login-logo">
-
                 {% if company.logo_url %}
-
                     <img
                         src="{{ company.logo_url }}"
                         alt="{{ company.company_name }}"
                     >
-
                 {% else %}
-
-                    <span>
-                        AV
-                    </span>
-
+                    <span>AV</span>
                 {% endif %}
-
             </div>
-
-
-            <!-- COMPANY -->
 
             <div class="admin-login-company">
-
-                <h1>
-                    {{ company.company_name }}
-                </h1>
-
-                <span>
-                    ADMINISTRATION PORTAL
-                </span>
-
+                <h1>{{ company.company_name }}</h1>
+                <span>ADMINISTRATION PORTAL</span>
             </div>
-
 
             <div class="admin-login-divider"></div>
 
-
-            <h2>
-                Manage your customer
-                support operations.
-            </h2>
-
+            <h2>Manage your customer support operations.</h2>
 
             <p>
-                Access complaints, customer communications,
-                company updates and administrative settings
-                from one secure workspace.
+                Access complaints, customer communications, company updates
+                and administrative settings from one secure workspace.
             </p>
-
-
-            <!-- FEATURES -->
 
             <div class="admin-login-features">
 
                 <div class="admin-login-feature">
-
-                    <span class="feature-icon">
-                        ✓
-                    </span>
-
-                    <span>
-                        Complaint management
-                    </span>
-
+                    <span class="feature-icon">✓</span>
+                    <span>Complaint management</span>
                 </div>
 
-
                 <div class="admin-login-feature">
-
-                    <span class="feature-icon">
-                        ✓
-                    </span>
-
-                    <span>
-                        Customer communication
-                    </span>
-
+                    <span class="feature-icon">✓</span>
+                    <span>Customer communication</span>
                 </div>
 
-
                 <div class="admin-login-feature">
-
-                    <span class="feature-icon">
-                        ✓
-                    </span>
-
-                    <span>
-                        Company updates
-                    </span>
-
+                    <span class="feature-icon">✓</span>
+                    <span>Company updates</span>
                 </div>
 
             </div>
 
-
         </div>
-
 
         <div class="admin-login-brand-footer">
-
-            &copy;
-            {{ current_year }}
-            {{ company.company_name }}
-
+            &copy; {{ current_year }} {{ company.company_name }}.
+            All rights reserved.
         </div>
-
 
     </section>
 
-
-
-    <!-- =====================================================
-         LOGIN PANEL
-         ===================================================== -->
-
+    <!-- LOGIN PANEL -->
     <section class="admin-login-panel">
-
 
         <div class="admin-login-card">
 
-
-            <!-- MOBILE LOGO -->
-
+            <!-- MOBILE BRANDING -->
             <div class="admin-login-mobile-logo">
-
                 {% if company.logo_url %}
-
                     <img
                         src="{{ company.logo_url }}"
                         alt="{{ company.company_name }}"
                     >
-
                 {% else %}
-
-                    <span>
-                        AV
-                    </span>
-
+                    <span>AV</span>
                 {% endif %}
-
             </div>
 
-
             <!-- HEADING -->
-
             <div class="admin-login-heading">
 
-                <span class="login-eyebrow">
-                    SECURE ACCESS
-                </span>
+                <span class="login-eyebrow">SECURE ACCESS</span>
 
-                <h2>
-                    Welcome back
-                </h2>
+                <h2>Welcome back</h2>
 
                 <p>
-                    Sign in to your administration account
-                    to continue.
+                    Sign in to your administration account to continue.
                 </p>
 
             </div>
 
-
             <!-- FLASH MESSAGES -->
-
-            {% with messages = get_flashed_messages(
-                with_categories=true
-            ) %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
 
                 {% if messages %}
-
-                    <div class="admin-login-flashes">
+                    <div class="admin-login-flashes" role="status" aria-live="polite">
 
                         {% for category, message in messages %}
-
-                            <div
-                                class="
-                                    admin-login-alert
-                                    admin-login-alert-{{ category }}
-                                "
-                            >
+                            <div class="admin-login-alert admin-login-alert-{{ category }}">
                                 {{ message }}
                             </div>
-
                         {% endfor %}
 
                     </div>
-
                 {% endif %}
 
             {% endwith %}
 
-
             <!-- LOGIN FORM -->
-
             <form
                 class="admin-login-form"
                 method="POST"
                 autocomplete="on"
+                id="adminLoginForm"
             >
 
-
                 <!-- USERNAME -->
-
                 <div class="login-field">
 
-                    <label for="username">
-                        Username
-                    </label>
+                    <label for="username">Username</label>
 
                     <div class="login-input-wrapper">
 
-                        <span class="login-input-icon">
-                            @
-                        </span>
+                        <span class="login-input-icon" aria-hidden="true">@</span>
 
                         <input
                             type="text"
@@ -290,6 +757,8 @@
                             name="username"
                             placeholder="Enter your username"
                             autocomplete="username"
+                            autocapitalize="none"
+                            spellcheck="false"
                             required
                             autofocus
                         >
@@ -298,26 +767,16 @@
 
                 </div>
 
-
-
                 <!-- PASSWORD -->
-
                 <div class="login-field">
 
                     <div class="login-label-row">
-
-                        <label for="password">
-                            Password
-                        </label>
-
+                        <label for="password">Password</label>
                     </div>
-
 
                     <div class="login-input-wrapper">
 
-                        <span class="login-input-icon">
-                            •
-                        </span>
+                        <span class="login-input-icon" aria-hidden="true">●</span>
 
                         <input
                             type="password"
@@ -328,78 +787,99 @@
                             required
                         >
 
+                        <button
+                            type="button"
+                            class="login-password-toggle"
+                            id="togglePassword"
+                            aria-label="Show password"
+                            aria-controls="password"
+                            aria-pressed="false"
+                        >
+                            Show
+                        </button>
+
                     </div>
 
                 </div>
 
-
-
                 <!-- SUBMIT -->
-
                 <button
                     type="submit"
                     class="admin-login-button"
+                    id="loginSubmitButton"
                 >
-
-                    <span>
-                        Sign in to Administration
-                    </span>
-
-                    <span class="login-arrow">
-                        →
-                    </span>
-
+                    <span id="loginButtonText">Sign in to Administration</span>
+                    <span class="login-arrow" aria-hidden="true">→</span>
                 </button>
-
 
             </form>
 
-
             <!-- SECURITY NOTE -->
-
             <div class="admin-login-security">
 
-                <span class="security-icon">
-                    ✓
-                </span>
+                <span class="security-icon" aria-hidden="true">✓</span>
 
                 <div>
-
-                    <strong>
-                        Secure administration
-                    </strong>
+                    <strong>Secure administration</strong>
 
                     <span>
-                        This area is restricted to authorised
-                        administrators.
+                        This area is restricted to authorised administrators.
+                        Never share your password with anyone.
                     </span>
-
                 </div>
 
             </div>
 
-
             <!-- BACK TO WEBSITE -->
-
-            <a
-                href="/"
-                class="back-to-site"
-            >
-
-                ← Back to customer portal
-
+            <a href="/" class="back-to-site">
+                <span aria-hidden="true">←</span>
+                Back to customer portal
             </a>
-
 
         </div>
 
-
     </section>
-
 
 </div>
 
+<script>
+(function () {
+    "use strict";
+
+    const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const loginForm = document.getElementById("adminLoginForm");
+    const submitButton = document.getElementById("loginSubmitButton");
+    const buttonText = document.getElementById("loginButtonText");
+
+    togglePassword.addEventListener("click", function () {
+        const showingPassword = passwordInput.type === "text";
+
+        passwordInput.type = showingPassword ? "password" : "text";
+        togglePassword.textContent = showingPassword ? "Show" : "Hide";
+        togglePassword.setAttribute(
+            "aria-label",
+            showingPassword ? "Show password" : "Hide password"
+        );
+        togglePassword.setAttribute(
+            "aria-pressed",
+            String(!showingPassword)
+        );
+    });
+
+    loginForm.addEventListener("submit", function (event) {
+        if (!loginForm.checkValidity()) {
+            event.preventDefault();
+            loginForm.reportValidity();
+            return;
+        }
+
+        submitButton.disabled = true;
+        buttonText.textContent = "Signing in...";
+    });
+
+})();
+</script>
 
 </body>
-
 </html>
