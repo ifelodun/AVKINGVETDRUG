@@ -1,219 +1,670 @@
 {% extends "base.html" %}
 
-{% block title %}
-    Updates | {{ company.company_name }}
-{% endblock %}
-
+{% block title %}Updates | {{ company.company_name }}{% endblock %}
 
 {% block content %}
 
+<style>
+:root {
+    --pub-green: #087443;
+    --pub-dark: #064e32;
+    --pub-light: #eaf6ef;
+    --pub-text: #172b21;
+    --pub-muted: #718078;
+    --pub-border: #e1e9e3;
+    --pub-background: #f5f8f6;
+}
+
+.updates-page {
+    min-height: 75vh;
+    padding: 30px 20px 65px;
+    background: var(--pub-background);
+    color: var(--pub-text);
+}
+
+.updates-page,
+.updates-page * {
+    box-sizing: border-box;
+}
+
+.updates-page a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.updates-hero {
+    position: relative;
+    overflow: hidden;
+    max-width: 1250px;
+    margin: 0 auto 36px;
+    padding: clamp(35px, 6vw, 68px);
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 95% 10%, rgba(255,255,255,.12), transparent 28%),
+        linear-gradient(120deg, #043e28 0%, #075c39 52%, #0b8950 100%);
+    color: #fff;
+    box-shadow: 0 14px 35px rgba(6,78,50,.13);
+}
+
+.updates-hero::before,
+.updates-hero::after {
+    position: absolute;
+    content: "";
+    pointer-events: none;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 50%;
+}
+
+.updates-hero::before {
+    width: 330px;
+    height: 330px;
+    top: -190px;
+    right: -70px;
+    box-shadow: 0 0 0 35px rgba(255,255,255,.025);
+}
+
+.updates-hero::after {
+    width: 200px;
+    height: 200px;
+    right: 20%;
+    bottom: -160px;
+}
+
+.updates-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+}
+
+.updates-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 19px;
+    color: #c1efd0;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+}
+
+.updates-eyebrow::before {
+    width: 25px;
+    height: 2px;
+    border-radius: 5px;
+    background: #9ce7b6;
+    content: "";
+}
+
+.updates-hero h1 {
+    margin: 0 0 17px;
+    color: #fff;
+    font-size: clamp(32px, 5vw, 53px);
+    font-weight: 800;
+    letter-spacing: -1.7px;
+    line-height: 1.13;
+}
+
+.updates-hero p {
+    max-width: 650px;
+    margin: 0;
+    color: rgba(255,255,255,.83);
+    font-size: 14px;
+    line-height: 1.95;
+}
+
+.updates-container {
+    max-width: 1250px;
+    margin: 0 auto;
+}
+
+.updates-section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.updates-section-heading > span {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--pub-green);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+}
+
+.updates-section-header h2 {
+    margin: 0;
+    color: var(--pub-text);
+    font-size: clamp(22px, 3vw, 29px);
+    font-weight: 800;
+    letter-spacing: -.7px;
+    line-height: 1.35;
+}
+
+.updates-section-description {
+    margin: 8px 0 0;
+    color: var(--pub-muted);
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.updates-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 39px;
+    padding: 0 14px;
+    border: 1px solid #d5e9dc;
+    border-radius: 11px;
+    background: #fff;
+    color: var(--pub-green);
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.updates-count-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #119655;
+}
+
+.updates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 24px;
+}
+
+.professional-update-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--pub-border);
+    border-radius: 19px;
+    background: #fff;
+    box-shadow: 0 5px 22px rgba(23,43,33,.035);
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.professional-update-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(23,43,33,.09);
+}
+
+.update-card-image {
+    position: relative;
+    overflow: hidden;
+    background: #eaf1ec;
+}
+
+.update-card-image > img {
+    display: block;
+    width: 100%;
+    height: 270px;
+    object-fit: cover;
+    transition: transform .35s ease;
+}
+
+.professional-update-card:hover .update-card-image > img {
+    transform: scale(1.025);
+}
+
+.update-image-label {
+    position: absolute;
+    left: 16px;
+    bottom: 15px;
+    max-width: calc(100% - 32px);
+    padding: 8px 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 8px;
+    background: rgba(4,48,29,.85);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    backdrop-filter: blur(8px);
+}
+
+.update-card-content {
+    padding: 24px;
+}
+
+.update-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 17px;
+}
+
+.update-card-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--pub-muted);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.calendar-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 29px;
+    height: 29px;
+    border-radius: 9px;
+    background: var(--pub-light);
+    color: var(--pub-green);
+    font-size: 15px;
+}
+
+.update-card-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    background: var(--pub-light);
+    color: var(--pub-green);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.update-card-label::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #0c9856;
+    content: "";
+}
+
+.update-card-content h3 {
+    margin: 0 0 13px;
+    color: var(--pub-text);
+    font-size: clamp(18px, 2vw, 22px);
+    font-weight: 800;
+    letter-spacing: -.4px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.update-card-body {
+    margin: 0;
+    color: #617167;
+    font-size: 13px;
+    line-height: 1.95;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.update-image-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 21px;
+    padding-top: 20px;
+    border-top: 1px solid #edf1ed;
+}
+
+.update-gallery-item {
+    display: block;
+    overflow: hidden;
+    min-width: 0;
+    border: 1px solid var(--pub-border);
+    border-radius: 11px;
+    background: #f2f6f3;
+}
+
+.update-gallery-item img {
+    display: block;
+    width: 100%;
+    height: 125px;
+    object-fit: cover;
+    transition: transform .25s ease;
+}
+
+.update-gallery-item:hover img {
+    transform: scale(1.045);
+}
+
+.update-gallery-item:focus-visible {
+    outline: 3px solid rgba(8,116,67,.3);
+    outline-offset: 3px;
+}
+
+.updates-empty {
+    padding: clamp(35px, 6vw, 65px) 22px;
+    border: 1px solid var(--pub-border);
+    border-radius: 21px;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(23,43,33,.035);
+    text-align: center;
+}
+
+.updates-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 78px;
+    height: 78px;
+    margin: 0 auto 21px;
+    border: 1px solid #d8ecdf;
+    border-radius: 24px;
+    background: var(--pub-light);
+    color: var(--pub-green);
+    font-size: 31px;
+    font-weight: 800;
+}
+
+.updates-empty h2 {
+    margin: 0 0 11px;
+    color: var(--pub-text);
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.updates-empty p {
+    max-width: 450px;
+    margin: 0 auto;
+    color: var(--pub-muted);
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.updates-back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 45px;
+    margin-top: 25px;
+    padding: 0 19px;
+    border: 1px solid #d3e8da;
+    border-radius: 11px;
+    background: #fff;
+    color: var(--pub-green);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 800;
+    transition: background .2s, color .2s, border-color .2s;
+}
+
+.updates-back-button:hover {
+    border-color: var(--pub-green);
+    background: var(--pub-green);
+    color: #fff;
+}
+
+.updates-back-button:focus-visible {
+    outline: 3px solid rgba(8,116,67,.25);
+    outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+    .updates-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .professional-update-card {
+        max-width: 720px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .update-card-image > img {
+        height: clamp(210px, 45vw, 360px);
+    }
+}
+
+@media (max-width: 600px) {
+    .updates-page {
+        padding: 17px 13px 40px;
+    }
+
+    .updates-hero {
+        margin-bottom: 27px;
+        padding: 32px 23px;
+        border-radius: 18px;
+    }
+
+    .updates-hero h1 {
+        font-size: 34px;
+        letter-spacing: -1px;
+    }
+
+    .updates-hero p {
+        font-size: 13px;
+        line-height: 1.85;
+    }
+
+    .updates-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 13px;
+        margin-bottom: 18px;
+    }
+
+    .updates-section-header h2 {
+        font-size: 23px;
+    }
+
+    .update-card-content {
+        padding: 19px;
+    }
+
+    .update-card-content h3 {
+        font-size: 19px;
+    }
+
+    .update-card-body {
+        font-size: 12px;
+        line-height: 1.9;
+    }
+
+    .update-card-image > img {
+        height: 225px;
+    }
+
+    .update-gallery-item img {
+        height: 105px;
+    }
+
+    .updates-empty {
+        border-radius: 17px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .professional-update-card,
+    .update-card-image > img,
+    .update-gallery-item img,
+    .updates-back-button {
+        transition: none;
+    }
+}
+</style>
+
 <section class="updates-page">
 
-
-    <!-- =====================================================
-         PAGE HERO
-         ===================================================== -->
-
-    <div class="updates-hero">
-
+    <!-- PAGE HERO -->
+    <header class="updates-hero">
         <div class="updates-hero-content">
 
             <span class="updates-eyebrow">
                 {{ company.company_name }}
             </span>
 
-            <h1>
-                Latest Updates
-            </h1>
+            <h1>Latest Updates</h1>
 
             <p>
                 Stay informed with the latest news, announcements,
                 service updates and important information from our team.
+                Check back regularly so you don't miss an important notice.
             </p>
 
         </div>
+    </header>
 
-    </div>
-
-
-
-    <!-- =====================================================
-         UPDATES CONTENT
-         ===================================================== -->
-
+    <!-- UPDATES CONTENT -->
     <div class="updates-container">
-
 
         {% if not updates %}
 
-        <!-- EMPTY STATE -->
+            <!-- EMPTY STATE -->
+            <div class="updates-empty">
 
-        <div class="updates-empty">
+                <div class="updates-empty-icon" aria-hidden="true">
+                    ✓
+                </div>
 
-            <div class="updates-empty-icon">
-                ✓
+                <h2>No Updates Yet</h2>
+
+                <p>
+                    There are no announcements available at the moment.
+                    Please check back soon for new updates and important
+                    information from our team.
+                </p>
+
+                <a
+                    href="{{ url_for('index') }}"
+                    class="updates-back-button"
+                >
+                    <span aria-hidden="true">←</span>
+                    Back to Home
+                </a>
+
             </div>
-
-            <h2>
-                No updates yet
-            </h2>
-
-            <p>
-                There are no announcements available at the moment.
-                Please check back soon for new updates.
-            </p>
-
-            <a
-                href="{{ url_for('index') }}"
-                class="updates-back-button"
-            >
-                ← Back to Home
-            </a>
-
-        </div>
-
 
         {% else %}
 
+            <!-- SECTION HEADER -->
+            <div class="updates-section-header">
 
-        <!-- =================================================
-             SECTION HEADER
-             ================================================= -->
+                <div class="updates-section-heading">
 
-        <div class="updates-section-header">
+                    <span>INFORMATION CENTRE</span>
 
-            <div>
+                    <h2>News &amp; Announcements</h2>
 
-                <span>
-                    INFORMATION CENTRE
-                </span>
-
-                <h2>
-                    News & Announcements
-                </h2>
-
-            </div>
-
-            <div class="updates-count">
-
-                {{ updates|length }}
-                update{% if updates|length != 1 %}s{% endif %}
-
-            </div>
-
-        </div>
-
-
-
-        <!-- =================================================
-             UPDATE GRID
-             ================================================= -->
-
-        <div class="updates-grid">
-
-            {% for update in updates %}
-
-            <article class="professional-update-card">
-
-
-                <!-- IMAGE -->
-
-                {% if update.image_urls %}
-
-                <div class="update-card-image">
-
-                    <img
-                        src="{{ update.image_urls[0] }}"
-                        alt="{{ update.title }}"
-                        loading="lazy"
-                    >
-
-                    <div class="update-image-label">
-                        {{ company.company_name }}
-                    </div>
-
-                </div>
-
-                {% endif %}
-
-
-
-                <!-- CONTENT -->
-
-                <div class="update-card-content">
-
-
-                    <div class="update-card-meta">
-
-                        <span class="update-card-date">
-
-                            <span class="calendar-icon">
-                                ▣
-                            </span>
-
-                            {{ update.created_at.strftime('%d %b %Y') }}
-
-                        </span>
-
-                        <span class="update-card-label">
-                            UPDATE
-                        </span>
-
-                    </div>
-
-
-                    <h3>
-                        {{ update.title }}
-                    </h3>
-
-
-                    <p class="update-card-body">
-                        {{ update.body }}
+                    <p class="updates-section-description">
+                        The latest information and announcements from our team.
                     </p>
 
-
-
-                    <!-- ADDITIONAL IMAGES -->
-
-                    {% if update.image_urls and update.image_urls|length > 1 %}
-
-                    <div class="update-image-gallery">
-
-                        {% for img in update.image_urls[1:] %}
-
-                        <a
-                            href="{{ img }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="update-gallery-item"
-                        >
-
-                            <img
-                                src="{{ img }}"
-                                alt="{{ update.title }}"
-                                loading="lazy"
-                            >
-
-                        </a>
-
-                        {% endfor %}
-
-                    </div>
-
-                    {% endif %}
-
-
                 </div>
 
+                <div class="updates-count">
+                    <span class="updates-count-dot" aria-hidden="true"></span>
 
-            </article>
+                    {{ updates|length }}
+                    update{% if updates|length != 1 %}s{% endif %}
+                </div>
 
-            {% endfor %}
+            </div>
 
-        </div>
+            <!-- UPDATE GRID -->
+            <div class="updates-grid">
+
+                {% for update in updates %}
+
+                    <article class="professional-update-card">
+
+                        <!-- FEATURE IMAGE -->
+                        {% if update.image_urls %}
+
+                            <div class="update-card-image">
+
+                                <img
+                                    src="{{ update.image_urls[0] }}"
+                                    alt="{{ update.title }}"
+                                    loading="lazy"
+                                >
+
+                                <div class="update-image-label">
+                                    {{ company.company_name }}
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                        <!-- UPDATE CONTENT -->
+                        <div class="update-card-content">
+
+                            <div class="update-card-meta">
+
+                                <span class="update-card-date">
+
+                                    <span class="calendar-icon" aria-hidden="true">
+                                        ▣
+                                    </span>
+
+                                    {% if update.created_at %}
+                                        {{ update.created_at.strftime('%d %b %Y') }}
+                                    {% else %}
+                                        Date unavailable
+                                    {% endif %}
+
+                                </span>
+
+                                <span class="update-card-label">
+                                    UPDATE
+                                </span>
+
+                            </div>
+
+                            <h3>{{ update.title }}</h3>
+
+                            <p class="update-card-body">{{ update.body }}</p>
+
+                            <!-- ADDITIONAL IMAGES -->
+                            {% if update.image_urls and update.image_urls|length > 1 %}
+
+                                <div class="update-image-gallery">
+
+                                    {% for img in update.image_urls[1:] %}
+
+                                        <a
+                                            href="{{ img }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="update-gallery-item"
+                                            aria-label="Open additional image for {{ update.title }}"
+                                        >
+
+                                            <img
+                                                src="{{ img }}"
+                                                alt="Additional image for {{ update.title }}"
+                                                loading="lazy"
+                                            >
+
+                                        </a>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
 
         {% endif %}
-
 
     </div>
 
