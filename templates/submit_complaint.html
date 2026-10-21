@@ -1,568 +1,933 @@
 {% extends "base.html" %}
 
 {% block title %}
-Report an Issue
+    {{ company.company_name }} | Submit a Complaint
 {% endblock %}
 
 {% block content %}
 
-<section class="form-section wrap">
+<style>
+/* =========================================================
+   CUSTOMER COMPLAINT FORM — PREMIUM SUPPORT DESIGN
+   ========================================================= */
 
+.complaint-page {
+    --cp-green: #087443;
+    --cp-dark: #064e32;
+    --cp-light: #eaf6ef;
+    --cp-text: #172b22;
+    --cp-muted: #68786e;
+    --cp-border: #dfe9e2;
 
-<!-- ======================================================
-     PAGE HEADER
-     ====================================================== -->
+    background: #f5f8f6;
+    color: var(--cp-text);
+    min-height: 100vh;
+    padding: 36px 18px 65px;
+}
 
-<div class="dash-header">
+.complaint-page *,
+.complaint-page *::before,
+.complaint-page *::after {
+    box-sizing: border-box;
+}
 
-    <div>
+.cp-container {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+}
 
-        <h1>
-            Report an Issue
-        </h1>
+/* PAGE HEADER */
 
-        <p class="hero-sub">
-            Tell us what happened and provide as much detail
-            as possible. We'll review your complaint and get
-            back to you.
-        </p>
+.cp-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+    margin-bottom: 25px;
+    overflow: hidden;
+    background: linear-gradient(125deg, #064e32, #087443 75%, #11945b);
+    border-radius: 21px;
+    box-shadow: 0 15px 35px rgba(6, 78, 50, .13);
+}
+
+.cp-header::after {
+    content: "";
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    right: -95px;
+    top: -135px;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 50%;
+    box-shadow: 0 0 0 30px rgba(255,255,255,.035);
+    pointer-events: none;
+}
+
+.cp-header-icon {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    color: white;
+    font-size: 30px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.2);
+}
+
+.cp-header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.cp-eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    color: #c4ebd2;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+}
+
+.cp-header h1 {
+    margin: 0 0 10px;
+    color: #fff;
+    font-size: clamp(27px, 4vw, 36px);
+    line-height: 1.2;
+    font-weight: 850;
+    letter-spacing: -.7px;
+}
+
+.cp-header p {
+    max-width: 620px;
+    margin: 0;
+    color: #e0f0e6;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* INFORMATION BANNER */
+
+.cp-info-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 17px 19px;
+    margin-bottom: 24px;
+    background: #edf6ff;
+    border: 1px solid #d5e7f8;
+    border-radius: 13px;
+}
+
+.cp-info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 29px;
+    height: 29px;
+    color: #1766a0;
+    background: #d9ebfc;
+    border-radius: 9px;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.cp-info-banner strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #174a70;
+    font-size: 13px;
+}
+
+.cp-info-banner p {
+    margin: 0;
+    color: #42657e;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* MAIN FORM CARD */
+
+.cp-card {
+    padding: 34px;
+    background: #fff;
+    border: 1px solid var(--cp-border);
+    border-radius: 21px;
+    box-shadow: 0 12px 35px rgba(22, 61, 39, .045);
+}
+
+.cp-section-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #edf1ee;
+}
+
+.cp-section-heading:not(:first-child) {
+    margin-top: 36px;
+}
+
+.cp-section-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    color: var(--cp-green);
+    background: var(--cp-light);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 850;
+}
+
+.cp-section-heading h2 {
+    margin: 0 0 6px;
+    color: var(--cp-dark);
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.cp-section-heading p {
+    margin: 0;
+    color: var(--cp-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* FORM GRID */
+
+.cp-field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.cp-field {
+    min-width: 0;
+    margin-bottom: 23px;
+}
+
+.cp-field label {
+    display: block;
+    margin-bottom: 9px;
+    color: #263a2e;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.cp-required {
+    color: #c0392b;
+    margin-left: 3px;
+}
+
+.cp-optional {
+    color: #829087;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: 5px;
+}
+
+.cp-field input:not([type="file"]),
+.cp-field textarea {
+    display: block;
+    width: 100%;
+    min-height: 49px;
+    padding: 13px 15px;
+    color: #24372b;
+    background: #fbfdfb;
+    border: 1px solid #dce6de;
+    border-radius: 10px;
+    outline: none;
+    font: inherit;
+    font-size: 14px;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.cp-field textarea {
+    min-height: 175px;
+    resize: vertical;
+    line-height: 1.8;
+}
+
+.cp-field input:not([type="file"]):focus,
+.cp-field textarea:focus {
+    background: #fff;
+    border-color: var(--cp-green);
+    box-shadow: 0 0 0 3px rgba(8,116,67,.10);
+}
+
+.cp-field input::placeholder,
+.cp-field textarea::placeholder {
+    color: #9aa69e;
+}
+
+.cp-field input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    color: #53655a;
+    background: #fbfdfb;
+    border: 1px dashed #a9c9b3;
+    border-radius: 11px;
+    font-size: 12px;
+}
+
+.cp-field input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 9px 13px;
+    color: #fff;
+    background: var(--cp-green);
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.cp-field input[type="file"]::file-selector-button:hover {
+    background: var(--cp-dark);
+}
+
+.cp-hint {
+    display: block;
+    margin-top: 9px;
+    color: var(--cp-muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.cp-counter {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* IMAGE PREVIEW */
+
+.cp-image-preview {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 17px;
+}
+
+.cp-preview-item {
+    min-width: 0;
+    overflow: hidden;
+    padding: 7px;
+    background: #f6faf7;
+    border: 1px solid var(--cp-border);
+    border-radius: 12px;
+}
+
+.cp-preview-item img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #eaf0eb;
+}
+
+.cp-preview-name {
+    margin-top: 7px;
+    overflow: hidden;
+    color: #53655a;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* SUBMIT AREA */
+
+.cp-submit-area {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 13px;
+    padding-top: 25px;
+    border-top: 1px solid #edf1ee;
+}
+
+.cp-submit-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    max-width: 390px;
+    color: var(--cp-muted);
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.cp-submit-note-icon {
+    color: var(--cp-green);
+    font-size: 19px;
+    flex-shrink: 0;
+}
+
+.cp-submit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 51px;
+    min-width: 190px;
+    padding: 14px 22px;
+    color: #fff;
+    background: linear-gradient(120deg, #087443, #09633b);
+    border: 0;
+    border-radius: 11px;
+    box-shadow: 0 8px 20px rgba(8,116,67,.17);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s, background .2s;
+}
+
+.cp-submit-button:hover:not(:disabled) {
+    background: var(--cp-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(8,116,67,.23);
+}
+
+.cp-submit-button:disabled {
+    opacity: .72;
+    cursor: wait;
+    transform: none;
+}
+
+.cp-submit-button:focus-visible,
+.cp-field input:focus-visible,
+.cp-field textarea:focus-visible {
+    outline: 3px solid rgba(8,116,67,.22);
+    outline-offset: 2px;
+}
+
+.cp-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 23px;
+    color: var(--cp-green);
+    font-size: 13px;
+    font-weight: 750;
+    text-decoration: none;
+}
+
+.cp-back-link:hover {
+    color: var(--cp-dark);
+    text-decoration: underline;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 650px) {
+    .complaint-page {
+        padding: 20px 12px 40px;
+    }
+
+    .cp-header {
+        align-items: flex-start;
+        gap: 14px;
+        padding: 23px 19px;
+        border-radius: 16px;
+    }
+
+    .cp-header-icon {
+        width: 47px;
+        height: 47px;
+        border-radius: 13px;
+        font-size: 23px;
+    }
+
+    .cp-header h1 {
+        font-size: 27px;
+    }
+
+    .cp-header p {
+        font-size: 13px;
+    }
+
+    .cp-card {
+        padding: 22px 17px;
+        border-radius: 16px;
+    }
+
+    .cp-field-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .cp-section-heading h2 {
+        font-size: 18px;
+    }
+
+    .cp-section-heading:not(:first-child) {
+        margin-top: 26px;
+    }
+
+    .cp-submit-area {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .cp-submit-button {
+        width: 100%;
+    }
+
+    .cp-image-preview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cp-info-banner {
+        padding: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .complaint-page *,
+    .complaint-page *::before,
+    .complaint-page *::after {
+        transition: none !important;
+    }
+}
+</style>
+
+<main class="complaint-page">
+<div class="cp-container">
+
+    <!-- PAGE HEADER -->
+    <header class="cp-header">
+
+        <div class="cp-header-icon" aria-hidden="true">
+            ✉
+        </div>
+
+        <div class="cp-header-content">
+
+            <span class="cp-eyebrow">
+                Customer Support Centre
+            </span>
+
+            <h1>Submit a Complaint</h1>
+
+            <p>
+                Tell us about your experience. Provide the relevant
+                details and our support team will review your complaint
+                and work towards a resolution.
+            </p>
+
+        </div>
+
+    </header>
+
+    <!-- INFORMATION BANNER -->
+    <div class="cp-info-banner" role="note">
+
+        <div class="cp-info-icon" aria-hidden="true">i</div>
+
+        <div>
+            <strong>Before you begin</strong>
+            <p>
+                Complete the required fields as accurately as possible.
+                You can optionally attach up to four supporting images.
+                Keep the tracking code issued after submission.
+            </p>
+        </div>
 
     </div>
 
-</div>
+    <!-- COMPLAINT FORM -->
+    <form
+        class="cp-card"
+        method="POST"
+        enctype="multipart/form-data"
+        id="complaintForm"
+    >
 
+        <!-- SECTION 1 -->
+        <div class="cp-section-heading">
 
-<!-- ======================================================
-     COMPLAINT FORM
-     ====================================================== -->
+            <div class="cp-section-number">01</div>
 
-<form
-    class="form-card complaint-form"
-    method="POST"
-    enctype="multipart/form-data"
-    id="complaintForm"
->
+            <div>
+                <h2>Your Information</h2>
+                <p>
+                    Tell us how to contact you about your complaint.
+                </p>
+            </div>
 
-    <!-- ==================================================
-         PERSONAL INFORMATION
-         ================================================== -->
+        </div>
 
-    <div class="form-section-heading">
+        <div class="cp-field-row">
 
-        <h2>
-            Your Information
-        </h2>
+            <div class="cp-field">
 
-        <p>
-            Please provide your contact details so we can
-            respond to your complaint.
-        </p>
+                <label for="name">
+                    Full Name <span class="cp-required">*</span>
+                </label>
 
-    </div>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ form.name if form else '' }}"
+                    maxlength="150"
+                    autocomplete="name"
+                    placeholder="Enter your full name"
+                    required
+                >
 
+            </div>
 
-    <div class="field-row">
+            <div class="cp-field">
 
-        <div class="field">
+                <label for="email">
+                    Email Address <span class="cp-required">*</span>
+                </label>
 
-            <label for="name">
-                Your Name
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ form.email if form else '' }}"
+                    maxlength="200"
+                    autocomplete="email"
+                    placeholder="you@example.com"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+        <div class="cp-field">
+
+            <label for="phone">
+                Phone Number <span class="cp-optional">Optional</span>
+            </label>
+
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value="{{ form.phone if form else '' }}"
+                maxlength="30"
+                autocomplete="tel"
+                placeholder="Enter your phone number"
+            >
+
+            <small class="cp-hint">
+                Providing a phone number may help the team contact you
+                if further clarification is needed.
+            </small>
+
+        </div>
+
+        <!-- SECTION 2 -->
+        <div class="cp-section-heading">
+
+            <div class="cp-section-number">02</div>
+
+            <div>
+                <h2>Complaint Details</h2>
+                <p>
+                    Describe the issue and explain how we can assist you.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="cp-field">
+
+            <label for="subject">
+                Complaint Subject <span class="cp-required">*</span>
             </label>
 
             <input
                 type="text"
-                id="name"
-                name="name"
-                value="{{ form.name if form else '' }}"
-                maxlength="150"
-                autocomplete="name"
-                placeholder="Enter your full name"
+                id="subject"
+                name="subject"
+                maxlength="200"
+                placeholder="e.g. Incorrect order or delayed service"
+                value="{{ form.subject if form else '' }}"
                 required
             >
 
         </div>
 
+        <div class="cp-field">
 
-        <div class="field">
+            <label for="message">
+                Description of Your Complaint
+                <span class="cp-required">*</span>
+            </label>
 
-            <label for="email">
-                Email Address
+            <textarea
+                id="message"
+                name="message"
+                rows="8"
+                maxlength="5000"
+                placeholder="Explain what happened, when it happened, and any relevant details that could help us investigate..."
+                aria-describedby="messageHint messageCounter"
+                required
+            >{{ form.message if form else '' }}</textarea>
+
+            <div class="cp-counter">
+
+                <small class="cp-hint" id="messageHint">
+                    Please be as clear and specific as possible.
+                </small>
+
+                <small class="cp-hint" id="messageCounter">
+                    0 / 5000
+                </small>
+
+            </div>
+
+        </div>
+
+        <!-- SECTION 3 -->
+        <div class="cp-section-heading">
+
+            <div class="cp-section-number">03</div>
+
+            <div>
+                <h2>Supporting Evidence</h2>
+                <p>
+                    Add photos if they help explain the issue.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="cp-field">
+
+            <label for="images">
+                Attach Images <span class="cp-optional">Optional</span>
             </label>
 
             <input
-                type="email"
-                id="email"
-                name="email"
-                value="{{ form.email if form else '' }}"
-                maxlength="200"
-                autocomplete="email"
-                placeholder="you@example.com"
-                required
+                type="file"
+                id="images"
+                name="images"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                aria-describedby="imageStatus"
             >
+
+            <small id="imageStatus" class="cp-hint" aria-live="polite">
+                JPG, PNG or WEBP. Maximum 4 images, 2 MB per image.
+            </small>
+
+            <div
+                id="imagePreview"
+                class="cp-image-preview"
+                style="display:none;"
+                aria-label="Selected image previews"
+            ></div>
 
         </div>
 
-    </div>
+        <!-- SUBMISSION -->
+        <div class="cp-submit-area">
 
+            <div class="cp-submit-note">
+                <span class="cp-submit-note-icon" aria-hidden="true">
+                    ✓
+                </span>
 
-    <!-- ==================================================
-         PHONE
-         ================================================== -->
+                <span>
+                    After submission, keep your complaint tracking code
+                    so you can check its progress through the support portal.
+                </span>
+            </div>
 
-    <div class="field">
+            <button
+                class="cp-submit-button"
+                type="submit"
+                id="submitBtn"
+            >
+                <span id="submitBtnText">Submit Complaint</span>
+                <span aria-hidden="true">→</span>
+            </button>
 
-        <label for="phone">
+        </div>
 
-            Phone Number
+    </form>
 
-            <span class="hint">
-                (optional)
-            </span>
+    <a
+        href="{{ url_for('track_complaint') }}"
+        class="cp-back-link"
+    >
+        ← Track an Existing Complaint
+    </a>
 
-        </label>
-
-        <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value="{{ form.phone if form else '' }}"
-            maxlength="30"
-            autocomplete="tel"
-            placeholder="Enter your phone number"
-        >
-
-    </div>
-
-
-    <!-- ==================================================
-         COMPLAINT DETAILS
-         ================================================== -->
-
-    <div class="form-section-heading complaint-details-heading">
-
-        <h2>
-            Complaint Details
-        </h2>
-
-        <p>
-            Give us enough information to understand and
-            resolve the issue.
-        </p>
-
-    </div>
-
-
-    <!-- SUBJECT -->
-
-    <div class="field">
-
-        <label for="subject">
-            Subject
-        </label>
-
-        <input
-            type="text"
-            id="subject"
-            name="subject"
-            maxlength="200"
-            placeholder="e.g. Wrong item delivered"
-            value="{{ form.subject if form else '' }}"
-            required
-        >
-
-    </div>
-
-
-    <!-- MESSAGE -->
-
-    <div class="field">
-
-        <label for="message">
-            Tell Us What Happened
-        </label>
-
-        <textarea
-            id="message"
-            name="message"
-            rows="8"
-            maxlength="5000"
-            placeholder="Please describe the issue clearly..."
-            required
-        >{{ form.message if form else '' }}</textarea>
-
-        <small class="hint">
-            Please provide specific details that may help us
-            investigate your complaint.
-        </small>
-
-    </div>
-
-
-    <!-- ==================================================
-         PHOTOS
-         ================================================== -->
-
-    <div class="field">
-
-        <label for="images">
-
-            Supporting Photos
-
-            <span class="hint">
-                (optional)
-            </span>
-
-        </label>
-
-
-        <input
-            type="file"
-            id="images"
-            name="images"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-        >
-
-
-        <small
-            id="imageStatus"
-            class="hint"
-        >
-            You may upload up to 4 images.
-            Maximum 2 MB per image.
-        </small>
-
-
-        <!-- IMAGE PREVIEW -->
-
-        <div
-            id="imagePreview"
-            class="complaint-image-preview"
-            style="display:none;"
-        ></div>
-
-    </div>
-
-
-    <!-- ==================================================
-         SUBMIT
-         ================================================== -->
-
-    <div class="complaint-submit">
-
-        <button
-            class="btn btn-primary"
-            type="submit"
-            id="submitBtn"
-        >
-            Send Complaint
-        </button>
-
-        <p class="form-security-note">
-            Your complaint will receive a unique tracking
-            code after submission.
-        </p>
-
-    </div>
-
-</form>
-
-
-</section>
-
-<!-- ==========================================================
-     JAVASCRIPT
-     ========================================================== -->
+</div>
+</main>
 
 <script>
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        const form =
-            document.getElementById("complaintForm");
-
-        const imageInput =
-            document.getElementById("images");
-
-        const imageStatus =
-            document.getElementById("imageStatus");
-
-        const imagePreview =
-            document.getElementById("imagePreview");
-
-        const submitButton =
-            document.getElementById("submitBtn");
-
-
-        const MAX_FILES = 4;
-
-        const MAX_FILE_SIZE =
-            2 * 1024 * 1024; // 2 MB
-
-
-        const ALLOWED_TYPES = [
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-        ];
-
-
-        // ======================================================
-        // IMAGE SELECTION
-        // ======================================================
-
-        imageInput.addEventListener(
-            "change",
-            function () {
-
-                const files =
-                    Array.from(
-                        imageInput.files
-                    );
-
-
-                imagePreview.innerHTML = "";
-
-                imagePreview.style.display =
-                    "none";
-
-
-                // ------------------------------------------------
-                // Maximum number of files
-                // ------------------------------------------------
-
-                if (
-                    files.length >
-                    MAX_FILES
-                ) {
-
-                    alert(
-                        "You can upload a maximum of 4 images."
-                    );
-
-                    imageInput.value = "";
-
-                    imageStatus.textContent =
-                        "Please select no more than 4 images.";
-
-                    return;
-                }
-
-
-                // ------------------------------------------------
-                // Validate each image
-                // ------------------------------------------------
-
-                for (const file of files) {
-
-                    if (
-                        !ALLOWED_TYPES.includes(
-                            file.type
-                        )
-                    ) {
-
-                        alert(
-                            `"${file.name}" is not a supported image format.`
-                        );
-
-                        imageInput.value = "";
-
-                        imageStatus.textContent =
-                            "Only JPG, JPEG, PNG and WEBP images are allowed.";
-
-                        return;
-                    }
-
-
-                    if (
-                        file.size >
-                        MAX_FILE_SIZE
-                    ) {
-
-                        alert(
-                            `"${file.name}" is larger than 2 MB.`
-                        );
-
-                        imageInput.value = "";
-
-                        imageStatus.textContent =
-                            "Each image must be 2 MB or less.";
-
-                        return;
-                    }
-
-                }
-
-
-                // ------------------------------------------------
-                // Display status
-                // ------------------------------------------------
-
-                if (files.length === 0) {
-
-                    imageStatus.textContent =
-                        "You may upload up to 4 images. Maximum 2 MB per image.";
-
-                    return;
-                }
-
-
-                imageStatus.textContent =
-                    `${files.length} image(s) selected.`;
-
-
-                // ------------------------------------------------
-                // Preview images
-                // ------------------------------------------------
-
-                imagePreview.style.display =
-                    "grid";
-
-
-                files.forEach(
-                    function (file) {
-
-                        const reader =
-                            new FileReader();
-
-
-                        reader.onload =
-                            function (event) {
-
-                                const wrapper =
-                                    document.createElement(
-                                        "div"
-                                    );
-
-                                wrapper.className =
-                                    "complaint-preview-item";
-
-
-                                const image =
-                                    document.createElement(
-                                        "img"
-                                    );
-
-                                image.src =
-                                    event.target.result;
-
-                                image.alt =
-                                    file.name;
-
-
-                                wrapper.appendChild(
-                                    image
-                                );
-
-
-                                imagePreview.appendChild(
-                                    wrapper
-                                );
-
-                            };
-
-
-                        reader.readAsDataURL(
-                            file
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-        // ======================================================
-        // FORM SUBMISSION VALIDATION
-        // ======================================================
-
-        form.addEventListener(
-            "submit",
-            function (event) {
-
-                const files =
-                    Array.from(
-                        imageInput.files
-                    );
-
-
-                // ------------------------------------------------
-                // Maximum files
-                // ------------------------------------------------
-
-                if (
-                    files.length >
-                    MAX_FILES
-                ) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "You can upload a maximum of 4 images."
-                    );
-
-                    return;
-                }
-
-
-                // ------------------------------------------------
-                // Validate files
-                // ------------------------------------------------
-
-                for (const file of files) {
-
-                    if (
-                        !ALLOWED_TYPES.includes(
-                            file.type
-                        )
-                    ) {
-
-                        event.preventDefault();
-
-                        alert(
-                            `"${file.name}" is not a supported image format.`
-                        );
-
-                        return;
-                    }
-
-
-                    if (
-                        file.size >
-                        MAX_FILE_SIZE
-                    ) {
-
-                        event.preventDefault();
-
-                        alert(
-                            `"${file.name}" is larger than 2 MB. Maximum size is 2 MB.`
-                        );
-
-                        return;
-                    }
-
-                }
-
-
-                // ------------------------------------------------
-                // Prevent double submission
-                // ------------------------------------------------
-
-                submitButton.disabled =
-                    true;
-
-                submitButton.textContent =
-                    "Sending Complaint...";
-
-            }
-        );
-
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("complaintForm");
+    const imageInput = document.getElementById("images");
+    const imageStatus = document.getElementById("imageStatus");
+    const imagePreview = document.getElementById("imagePreview");
+    const submitButton = document.getElementById("submitBtn");
+    const submitButtonText = document.getElementById("submitBtnText");
+    const messageInput = document.getElementById("message");
+    const messageCounter = document.getElementById("messageCounter");
+
+    const MAX_FILES = 4;
+    const MAX_FILE_SIZE = 2 * 1024 * 1024;
+
+    const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    let submitting = false;
+    let previewUrls = [];
+
+    function resetPreview() {
+        previewUrls.forEach(function (url) {
+            URL.revokeObjectURL(url);
+        });
+
+        previewUrls = [];
+        imagePreview.replaceChildren();
+        imagePreview.style.display = "none";
     }
-);
 
+    function resetImageInput(message) {
+        imageInput.value = "";
+        resetPreview();
+        imageStatus.textContent = message;
+    }
+
+    function validateFiles(files) {
+
+        if (files.length > MAX_FILES) {
+            return "You can upload a maximum of 4 images.";
+        }
+
+        for (const file of files) {
+
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                return file.name +
+                    " is not supported. Please select JPG, PNG or WEBP images.";
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                return file.name +
+                    " exceeds the 2 MB limit. Please choose a smaller image.";
+            }
+        }
+
+        return null;
+    }
+
+    function updateMessageCounter() {
+        messageCounter.textContent =
+            messageInput.value.length + " / 5000";
+    }
+
+    messageInput.addEventListener("input", updateMessageCounter);
+    updateMessageCounter();
+
+    imageInput.addEventListener("change", function () {
+
+        const files = Array.from(imageInput.files);
+
+        resetPreview();
+
+        const validationError = validateFiles(files);
+
+        if (validationError) {
+            resetImageInput(validationError);
+            window.alert(validationError);
+            return;
+        }
+
+        if (files.length === 0) {
+            imageStatus.textContent =
+                "JPG, PNG or WEBP. Maximum 4 images, 2 MB per image.";
+            return;
+        }
+
+        imageStatus.textContent =
+            files.length + " image(s) selected successfully.";
+
+        imagePreview.style.display = "grid";
+
+        files.forEach(function (file) {
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "cp-preview-item";
+
+            const image = document.createElement("img");
+            const imageUrl = URL.createObjectURL(file);
+
+            previewUrls.push(imageUrl);
+
+            image.src = imageUrl;
+            image.alt = "Preview of " + file.name;
+
+            const filename = document.createElement("div");
+            filename.className = "cp-preview-name";
+            filename.textContent = file.name;
+            filename.title = file.name;
+
+            wrapper.appendChild(image);
+            wrapper.appendChild(filename);
+            imagePreview.appendChild(wrapper);
+
+        });
+
+    });
+
+    form.addEventListener("submit", function (event) {
+
+        const files = Array.from(imageInput.files);
+        const validationError = validateFiles(files);
+
+        if (validationError) {
+            event.preventDefault();
+            window.alert(validationError);
+            return;
+        }
+
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            form.reportValidity();
+            return;
+        }
+
+        if (submitting) {
+            event.preventDefault();
+            return;
+        }
+
+        submitting = true;
+        submitButton.disabled = true;
+        submitButtonText.textContent = "Submitting Complaint...";
+
+    });
+
+});
 </script>
 
 {% endblock %}
