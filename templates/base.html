@@ -1,304 +1,577 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ company.company_name }} customer support and complaint portal">
+    <meta name="theme-color" content="#075c3b">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>{% block title %}{{ company.company_name }}{% endblock %}</title>
 
-    <meta
-        name="description"
-        content="{{ company.company_name }} customer support and complaint portal"
-    >
-
-    <title>
-        {% block title %}
-            {{ company.company_name }}
-        {% endblock %}
-    </title>
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
-        rel="stylesheet"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-    <!-- Main CSS -->
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+    <style>
+        :root {
+            --brand-green: #087443;
+            --brand-dark: #064e32;
+            --brand-deep: #033b27;
+            --brand-light: #eaf7ef;
+            --text-main: #172b22;
+            --text-muted: #64756b;
+            --border-color: #e3ebe6;
+            --page-bg: #f6f9f7;
+            --white: #ffffff;
+            --shadow-soft: 0 8px 28px rgba(4, 56, 35, 0.07);
+        }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            min-height: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--page-bg);
+            color: var(--text-main);
+            font-family: "DM Sans", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.97);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 18px rgba(4, 56, 35, 0.04);
+            backdrop-filter: blur(14px);
+        }
+
+        .site-header-inner {
+            width: min(1240px, calc(100% - 40px));
+            min-height: 82px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 28px;
+        }
+
+        .site-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 13px;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+
+        .site-brand-logo {
+            width: 52px;
+            height: 52px;
+            padding: 4px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+        }
+
+        .site-brand-logo img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .site-brand-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .site-brand-name {
+            color: var(--brand-dark);
+            font-size: 15px;
+            line-height: 1.35;
+            font-weight: 800;
+            letter-spacing: -0.35px;
+            overflow-wrap: anywhere;
+        }
+
+        .site-brand-label {
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+
+        .nav-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 14px;
+            border-radius: 10px;
+            color: #52645a;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: color 0.2s ease, background 0.2s ease,
+                        transform 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--brand-green);
+            background: var(--brand-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-link:focus-visible,
+        .site-brand:focus-visible,
+        .footer-column a:focus-visible {
+            outline: 3px solid #a8dfbd;
+            outline-offset: 3px;
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .page-container {
+            width: min(1240px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+        .flash-wrapper {
+            padding-top: 18px;
+        }
+
+        .flash {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 14px 17px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            font-weight: 600;
+            box-shadow: 0 3px 12px rgba(20, 40, 28, 0.03);
+            overflow-wrap: anywhere;
+        }
+
+        .flash-success {
+            color: #17633d;
+            background: #edf9f1;
+            border-color: #c8ead4;
+        }
+
+        .flash-danger,
+        .flash-error {
+            color: #9d2c2c;
+            background: #fff0f0;
+            border-color: #f3cece;
+        }
+
+        .flash-warning {
+            color: #80520b;
+            background: #fff8e7;
+            border-color: #f1dfaa;
+        }
+
+        .flash-info,
+        .flash-message {
+            color: #205a86;
+            background: #eef7ff;
+            border-color: #cde5f8;
+        }
+
+        .site-footer {
+            position: relative;
+            margin-top: 64px;
+            color: #dce9e1;
+            background:
+                radial-gradient(ellipse at 90% 0%, rgba(28, 132, 83, 0.24), transparent 38%),
+                linear-gradient(135deg, var(--brand-deep), #052f21);
+        }
+
+        .footer-container {
+            width: min(1240px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 48px 0 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(150px, 0.8fr) minmax(180px, 0.9fr);
+            gap: 48px;
+            padding-bottom: 38px;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 17px;
+        }
+
+        .footer-brand img {
+            width: 48px;
+            height: 48px;
+            padding: 4px;
+            object-fit: contain;
+            flex-shrink: 0;
+            background: #fff;
+            border-radius: 12px;
+        }
+
+        .footer-brand > div {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .footer-brand strong {
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .footer-brand span {
+            color: #a8c4b3;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .footer-company p {
+            max-width: 390px;
+            margin: 0;
+            color: #b8cec0;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 13px;
+            min-width: 0;
+        }
+
+        .footer-column h3 {
+            margin: 3px 0 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.7px;
+        }
+
+        .footer-column a,
+        .footer-column > span {
+            color: #b8cec0;
+            font-size: 12px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+            transition: color 0.2s ease;
+        }
+
+        .footer-column a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            min-height: 64px;
+            padding: 16px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.13);
+            color: #a8c4b3;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 900px) {
+            .site-header-inner {
+                padding: 14px 0;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 13px;
+            }
+
+            .site-brand {
+                align-self: flex-start;
+            }
+
+            .main-nav {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .nav-link {
+                padding: 10px 12px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+            }
+
+            .footer-company {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .site-header-inner,
+            .page-container,
+            .footer-container {
+                width: calc(100% - 28px);
+            }
+
+            .site-header-inner {
+                gap: 12px;
+            }
+
+            .site-brand-logo {
+                width: 44px;
+                height: 44px;
+                border-radius: 11px;
+            }
+
+            .site-brand-name {
+                font-size: 13px;
+            }
+
+            .site-brand-label {
+                font-size: 10px;
+            }
+
+            .main-nav {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 7px;
+            }
+
+            .nav-link {
+                padding: 11px 8px;
+                border: 1px solid var(--border-color);
+                background: #fff;
+                font-size: 11px;
+                white-space: normal;
+                text-align: center;
+            }
+
+            .flash-wrapper {
+                padding-top: 12px;
+            }
+
+            .flash {
+                padding: 12px;
+                font-size: 12px;
+            }
+
+            .site-footer {
+                margin-top: 42px;
+            }
+
+            .footer-container {
+                padding-top: 34px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 28px;
+                padding-bottom: 28px;
+            }
+
+            .footer-company {
+                grid-column: auto;
+            }
+
+            .footer-bottom {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 5px;
+                padding: 17px 0;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
-<!-- =========================================================
-     SITE HEADER
-     ========================================================= -->
+    <!-- Site header -->
+    <header class="site-header">
+        <div class="site-header-inner">
 
-<header class="site-header">
-
-    <div class="site-header-inner">
-
-        <!-- BRAND -->
-
-        <a
-            href="{{ url_for('home') }}"
-            class="site-brand"
-        >
-
-            {% if company.logo_url %}
-
-                <div class="site-brand-logo">
-
-                    <img
-                        src="{{ company.logo_url }}"
-                        alt="{{ company.company_name }}"
-                    >
-
-                </div>
-
-            {% endif %}
-
-
-            <div class="site-brand-text">
-
-                <span class="site-brand-name">
-                    {{ company.company_name }}
-                </span>
-
-                <span class="site-brand-label">
-                    Customer Support
-                </span>
-
-            </div>
-
-        </a>
-
-
-        <!-- NAVIGATION -->
-
-        <nav class="main-nav">
-
-            <a
-                href="{{ url_for('home') }}"
-                class="nav-link"
-            >
-                Home
-            </a>
-
-            <a
-                href="{{ url_for('submit_complaint') }}"
-                class="nav-link"
-            >
-                Report an Issue
-            </a>
-
-            <a
-                href="{{ url_for('track_complaint') }}"
-                class="nav-link"
-            >
-                Track Complaint
-            </a>
-
-            <a
-                href="{{ url_for('updates_feed') }}"
-                class="nav-link"
-            >
-                Updates
-            </a>
-
-        </nav>
-
-    </div>
-
-</header>
-
-
-<!-- =========================================================
-     FLASH MESSAGES
-     ========================================================= -->
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-
-    {% if messages %}
-
-        <div class="flash-wrapper">
-
-            <div class="page-container">
-
-                {% for category, msg in messages %}
-
-                    <div class="flash flash-{{ category }}">
-
-                        {{ msg }}
-
-                    </div>
-
-                {% endfor %}
-
-            </div>
-
-        </div>
-
-    {% endif %}
-
-{% endwith %}
-
-
-<!-- =========================================================
-     MAIN CONTENT
-     ========================================================= -->
-
-<main>
-
-    {% block content %}{% endblock %}
-
-</main>
-
-
-<!-- =========================================================
-     FOOTER
-     ========================================================= -->
-
-<footer class="site-footer">
-
-    <div class="footer-container">
-
-        <div class="footer-grid">
-
-
-            <!-- COMPANY -->
-
-            <div class="footer-company">
-
-                <div class="footer-brand">
-
-                    {% if company.logo_url %}
-
+            <a href="{{ url_for('home') }}" class="site-brand">
+                {% if company.logo_url %}
+                    <div class="site-brand-logo">
                         <img
                             src="{{ company.logo_url }}"
-                            alt="{{ company.company_name }}"
+                            alt="{{ company.company_name }} logo"
                         >
+                    </div>
+                {% endif %}
 
-                    {% endif %}
+                <div class="site-brand-text">
+                    <span class="site-brand-name">
+                        {{ company.company_name }}
+                    </span>
+                    <span class="site-brand-label">Customer Support</span>
+                </div>
+            </a>
 
-                    <div>
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('submit_complaint') }}" class="nav-link">Report an Issue</a>
+                <a href="{{ url_for('track_complaint') }}" class="nav-link">Track Complaint</a>
+                <a href="{{ url_for('updates_feed') }}" class="nav-link">Updates</a>
+            </nav>
 
-                        <strong>
-                            {{ company.company_name }}
-                        </strong>
+        </div>
+    </header>
 
-                        <span>
-                            Customer Support
-                        </span>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-wrapper" aria-live="polite">
+                <div class="page-container">
+                    {% for category, msg in messages %}
+                        <div class="flash flash-{{ category }}" role="status">
+                            {{ msg }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
 
+    <!-- Main page content -->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Site footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+
+                <div class="footer-company">
+                    <div class="footer-brand">
+                        {% if company.logo_url %}
+                            <img
+                                src="{{ company.logo_url }}"
+                                alt="{{ company.company_name }} logo"
+                            >
+                        {% endif %}
+
+                        <div>
+                            <strong>{{ company.company_name }}</strong>
+                            <span>Customer Support</span>
+                        </div>
                     </div>
 
+                    <p>
+                        We value your feedback and are committed to providing
+                        reliable support, clear communication, and timely
+                        responses to your concerns.
+                    </p>
                 </div>
 
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <a href="{{ url_for('home') }}">Home</a>
+                    <a href="{{ url_for('submit_complaint') }}">Report an Issue</a>
+                    <a href="{{ url_for('track_complaint') }}">Track Complaint</a>
+                    <a href="{{ url_for('updates_feed') }}">Latest Updates</a>
+                </div>
 
-                <p>
-                    We value your feedback and are committed to
-                    providing reliable customer support.
-                </p>
+                <div class="footer-column">
+                    <h3>Contact Information</h3>
 
-            </div>
+                    {% if company.location %}
+                        <span>{{ company.location }}</span>
+                    {% endif %}
 
+                    {% if company.phone %}
+                        <span>{{ company.phone }}</span>
+                    {% endif %}
 
-            <!-- QUICK LINKS -->
-
-            <div class="footer-column">
-
-                <h3>
-                    Quick Links
-                </h3>
-
-                <a href="{{ url_for('home') }}">
-                    Home
-                </a>
-
-                <a href="{{ url_for('submit_complaint') }}">
-                    Report an Issue
-                </a>
-
-                <a href="{{ url_for('track_complaint') }}">
-                    Track Complaint
-                </a>
-
-                <a href="{{ url_for('updates_feed') }}">
-                    Latest Updates
-                </a>
+                    {% if company.email %}
+                        <a href="mailto:{{ company.email }}">{{ company.email }}</a>
+                    {% endif %}
+                </div>
 
             </div>
 
-
-            <!-- CONTACT -->
-
-            <div class="footer-column">
-
-                <h3>
-                    Contact
-                </h3>
-
-                {% if company.location %}
-
-                    <span>
-                        {{ company.location }}
-                    </span>
-
-                {% endif %}
-
-
-                {% if company.phone %}
-
-                    <span>
-                        {{ company.phone }}
-                    </span>
-
-                {% endif %}
-
-
-                {% if company.email %}
-
-                    <a href="mailto:{{ company.email }}">
-                        {{ company.email }}
-                    </a>
-
-                {% endif %}
-
+            <div class="footer-bottom">
+                <span>
+                    &copy; {{ current_year }} {{ company.company_name }}.
+                    All rights reserved.
+                </span>
+                <span>Customer Support Portal</span>
             </div>
-
         </div>
-
-
-        <div class="footer-bottom">
-
-            <span>
-                &copy; {{ current_year }}
-                {{ company.company_name }}.
-                All rights reserved.
-            </span>
-
-            <span>
-                Customer Support Portal
-            </span>
-
-        </div>
-
-    </div>
-
-</footer>
-
+    </footer>
 
 </body>
-
 </html>
